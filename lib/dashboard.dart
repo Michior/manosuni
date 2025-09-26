@@ -1,13 +1,44 @@
 import 'package:flutter/material.dart';
 import 'activity_card.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
+
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  int _selectedIndex = 3; // Dashboard por defecto
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    switch (index) {
+      case 0:
+        Navigator.pushNamed(context, '/');
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/explorer');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/activities');
+        break;
+      case 3:
+        Navigator.pushNamed(context, '/dashboard');
+        break;
+      case 4:
+        Navigator.pushNamed(context, '/profile');
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F7F5), // background-light
+      backgroundColor: const Color(0xFFF8F7F5),
       appBar: AppBar(
         toolbarHeight: 80,
         backgroundColor: const Color(0xFFF8F7F5),
@@ -28,11 +59,11 @@ class DashboardPage extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             const Text(
-              "Mi Panel",
+              "Mi Dashboard",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
-                color: Color(0xFF221810), // background-dark
+                color: Color(0xFF221810),
               ),
             ),
           ],
@@ -50,7 +81,6 @@ class DashboardPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Horas
             Row(
               children: [
                 Expanded(
@@ -117,8 +147,6 @@ class DashboardPage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 24),
-
-            // Próximas actividades
             const Text(
               "Próximas Actividades",
               style: TextStyle(
@@ -140,10 +168,7 @@ class DashboardPage extends StatelessWidget {
               imageUrl:
                   "https://lh3.googleusercontent.com/aida-public/AB6AXuAEDBmwfjgPDOfBgYQeoYyiHOvPSpaCcG9EHu9ojxzP-z7T0-qD_6x9hYKbRmKbyI4VhJDiv5o9ulX6bZPg9myxAd6DScqJE1l2x8TElr4x7fz-M6SZhT1_ANXSVQtHgCGbwbqba75HnA736ybLV3u8Hxeg7jYDyuVBsxvCg6jRNGObQ5LdocX9E0IOy6Axf0lpB4iu2WQXgK3D4sCSO-tHqJ7-low2FqGjOBRPzUVXleSpwvcTwbOxRqHGCyae4qFBIGO91CeQ65Y",
             ),
-
             const SizedBox(height: 24),
-
-            // Actividades recomendadas
             const Text(
               "Actividades Recomendadas",
               style: TextStyle(
@@ -163,14 +188,16 @@ class DashboardPage extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
+        currentIndex: _selectedIndex,
         selectedItemColor: const Color(0xFFF2780D),
         unselectedItemColor: Colors.black.withOpacity(0.5),
         type: BottomNavigationBarType.fixed,
+        onTap: _onItemTapped,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Inicio"),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: "Explorar"),
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: "Actividades",),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: "Actividades"),
+          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Dashboard"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Perfil"),
         ],
       ),

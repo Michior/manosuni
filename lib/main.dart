@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:manosuni/OnBoardingPage.dart';
 import 'package:manosuni/dashboard.dart';
+import 'package:manosuni/explorer.dart';
 import 'package:manosuni/login.dart';
+import 'package:manosuni/my_activities.dart';
 import 'package:manosuni/register.dart';
 
 
@@ -27,7 +29,9 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const Login(),
         '/register': (context) => const Register(),
         '/dashboard': (context) => const DashboardPage(),
-        
+        '/explorer': (context) => const Explorer(),
+        '/activities': (context) => const MisActividades(),
+
       },
     );
   }

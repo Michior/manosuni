@@ -1,7 +1,39 @@
 import 'package:flutter/material.dart';
 
-class OnboardingPage extends StatelessWidget {
+class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
+
+  @override
+  State<OnboardingPage> createState() => _OnboardingPageState();
+}
+
+class _OnboardingPageState extends State<OnboardingPage> {
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    // Redirecciones según el índice
+    switch (index) {
+      case 0:
+        Navigator.pushNamed(context, '/');
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/explorer');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/activities');
+        break;
+      case 3:
+        Navigator.pushNamed(context, '/dashboard');
+        break;
+      case 4:
+        Navigator.pushNamed(context, '/profile');
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +42,6 @@ class OnboardingPage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // Main Content
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
@@ -18,7 +49,6 @@ class OnboardingPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // Imagen cuadrada
                       Container(
                         height: 250,
                         width: 250,
@@ -32,10 +62,7 @@ class OnboardingPage extends StatelessWidget {
                           ),
                         ),
                       ),
-
                       const SizedBox(height: 24),
-
-                      // Título
                       Text(
                         "Connect, Contribute, and Validate",
                         textAlign: TextAlign.center,
@@ -43,10 +70,7 @@ class OnboardingPage extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                       ),
-
                       const SizedBox(height: 12),
-
-                      // Descripción
                       Text(
                         "Find meaningful volunteer opportunities with NGOs and easily validate your social hours for university credit.",
                         textAlign: TextAlign.center,
@@ -54,10 +78,7 @@ class OnboardingPage extends StatelessWidget {
                               color: Colors.grey[700],
                             ),
                       ),
-
                       const SizedBox(height: 32),
-
-                      // Botón Registro
                       ElevatedButton(
                         onPressed: () {
                           Navigator.pushNamed(context, '/register');
@@ -74,10 +95,7 @@ class OnboardingPage extends StatelessWidget {
                           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                         ),
                       ),
-
                       const SizedBox(height: 12),
-
-                      // Botón Login
                       OutlinedButton(
                         onPressed: () {
                           Navigator.pushNamed(context, '/login');
@@ -94,16 +112,12 @@ class OnboardingPage extends StatelessWidget {
                           style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFF2780D)),
                         ),
                       ),
-
                       const SizedBox(height: 16),
-
                     ],
                   ),
                 ),
               ),
             ),
-
-            // Footer (Bottom Nav)
             Container(
               decoration: BoxDecoration(
                 border: Border(
@@ -112,12 +126,15 @@ class OnboardingPage extends StatelessWidget {
               ),
               child: BottomNavigationBar(
                 type: BottomNavigationBarType.fixed,
+                currentIndex: _selectedIndex,
                 selectedItemColor: const Color(0xFFF2780D),
                 unselectedItemColor: Colors.grey,
+                onTap: _onItemTapped,
                 items: const [
                   BottomNavigationBarItem(icon: Icon(Icons.home), label: "Inicio"),
                   BottomNavigationBarItem(icon: Icon(Icons.search), label: "Explorar"),
-                  BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: "Actividades",),
+                  BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: "Actividades"),
+                  BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Dashboard"),
                   BottomNavigationBarItem(icon: Icon(Icons.person), label: "Perfil"),
                 ],
               ),
