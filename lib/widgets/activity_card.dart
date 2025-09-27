@@ -14,10 +14,12 @@ class ActivityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context); // accedemos al tema actual
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F7F5),
+        color: theme.colorScheme.surface, // color dinámico
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -38,17 +40,16 @@ class ActivityCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF221810),
+                    color: theme.colorScheme.onSurface, // texto dinámico
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   date,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Color(0xFFF2780D),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.primary, // usa tu naranja en light/dark
                   ),
                 ),
               ],

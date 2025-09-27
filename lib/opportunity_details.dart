@@ -26,44 +26,41 @@ class OpportunityDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 245, 245, 245),
+        backgroundColor: const Color(0xFFF5F5F5),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Column(
-          children: [
-            const Text(
-              "Detalles de la Actividad",
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 6),
-          ],
+        title: const Text(
+          "Detalles de la Actividad",
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
       ),
-
       body: Column(
         children: [
-          // Imagen justo debajo del AppBar
-          Image.network(
-            imageUrl,
+          // --- Imagen principal ---
+          SizedBox(
             width: double.infinity,
             height: 200,
-            fit: BoxFit.cover,
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.cover,
+            ),
           ),
 
-          // Contenido desplazable
+          // --- Contenido desplazable ---
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Título de la oportunidad
                   Text(
                     title,
                     style: const TextStyle(
@@ -72,11 +69,15 @@ class OpportunityDetails extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
+
+                  // Descripción
                   Text(
                     description,
                     style: TextStyle(color: Colors.grey[700], fontSize: 14),
                   ),
                   const SizedBox(height: 16),
+
+                  // Requisitos
                   const Text(
                     "Requisitos",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -87,6 +88,8 @@ class OpportunityDetails extends StatelessWidget {
                     style: TextStyle(color: Colors.grey[700], fontSize: 14),
                   ),
                   const SizedBox(height: 16),
+
+                  // Duración
                   const Text(
                     "Duración",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -97,6 +100,8 @@ class OpportunityDetails extends StatelessWidget {
                     style: TextStyle(color: Colors.grey[700], fontSize: 14),
                   ),
                   const SizedBox(height: 16),
+
+                  // Organización
                   const Text(
                     "Organiza",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -130,32 +135,38 @@ class OpportunityDetails extends StatelessWidget {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 24),
                 ],
               ),
             ),
           ),
 
-          // Botón de inscripción
-          Container(
+          // --- Botón de inscripción ---
+          Padding(
             padding: const EdgeInsets.all(16),
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                // Acción de inscripción
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFF2780D),
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Acción de inscripción
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Te has inscrito a la actividad")),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFF2780D),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-              ),
-              child: const Text(
-                "Inscribirse",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                child: const Text(
+                  "Inscribirse",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),

@@ -4,34 +4,43 @@ import 'package:manosuni/dashboard.dart';
 import 'package:manosuni/explorer.dart';
 import 'package:manosuni/login.dart';
 import 'package:manosuni/my_activities.dart';
+import 'package:manosuni/profile.dart';
 import 'package:manosuni/register.dart';
-
+import 'package:manosuni/theme/settings.dart';
+import 'theme/app_theme.dart';
 
 void main() {
   runApp(const MyApp());
 }
+
+// Controlador global del tema
+ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ManosUni',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFF2780D)),
-        useMaterial3: true,
-      ),
-      // Ruta inicial
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const OnboardingPage(),
-        '/login': (context) => const Login(),
-        '/register': (context) => const Register(),
-        '/dashboard': (context) => const DashboardPage(),
-        '/explorer': (context) => const Explorer(),
-        '/activities': (context) => const MisActividades(),
-
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeNotifier,
+      builder: (_, currentMode, __) {
+        return MaterialApp(
+          title: 'ManosUni',
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: currentMode,
+          initialRoute: '/',
+          routes: {
+            '/': (context) => const OnboardingPage(),
+            '/login': (context) => const Login(),
+            '/register': (context) => const Register(),
+            '/dashboard': (context) => const DashboardPage(),
+            '/explorer': (context) => const Explorer(),
+            '/activities': (context) => const MisActividades(),
+            '/profile': (context) => const PerfilPage(),
+            '/settings': (context) => const SettingsPage(),
+          },
+        );
       },
     );
   }

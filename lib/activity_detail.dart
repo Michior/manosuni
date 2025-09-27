@@ -36,22 +36,23 @@ class _ActivityDetailsPageState extends State<ActivityDetail> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F7F5),
+      backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F7F5),
+        backgroundColor: theme.colorScheme.background,
         elevation: 1,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF221810)),
+          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onBackground),
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
-        title: const Text(
+        title: Text(
           "Detalles de la Actividad",
-          style: TextStyle(
+          style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Color(0xFF221810),
-            fontSize: 18,
+            color: theme.colorScheme.onBackground,
           ),
         ),
       ),
@@ -75,32 +76,36 @@ class _ActivityDetailsPageState extends State<ActivityDetail> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     "Jornada de Voluntariado en Huerto Comunitario",
-                    style: TextStyle(
+                    style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
-                      fontSize: 22,
-                      color: Color(0xFF221810),
+                      color: theme.colorScheme.onBackground,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     "Participa en una jornada de voluntariado en nuestro huerto comunitario. Ayuda a plantar, regar y mantener los cultivos, contribuyendo a un espacio verde sostenible y educativo para la comunidad.",
-                    style: TextStyle(color: Color(0xFF221810), height: 1.4),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onBackground,
+                      height: 1.4,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   _buildInfoSection(
                     "Requisitos",
                     "No se requieren habilidades especiales, solo entusiasmo y ganas de colaborar. Se recomienda llevar ropa cómoda y adecuada para trabajar al aire libre.",
+                    theme,
                   ),
                   const SizedBox(height: 12),
-                  _buildInfoSection("Duración", "4 horas"),
+                  _buildInfoSection("Duración", "4 horas", theme),
                   const SizedBox(height: 12),
                   _buildOrganizerSection(
                     "Organiza",
                     "Voluntarios en Acción",
                     "ONG Sembrando Futuro",
                     "https://lh3.googleusercontent.com/aida-public/AB6AXuBTp9FC-i9v5qkSw3c4biPP4THNYpsdigNy4QWHjsYUu9nFEeFKhiLx6EobxrFYj2vmiejpHPOl3dy7x6z2nMWYStf6AJtd3p0LqrvFQRQ8JlnY4uXbT7WKVchZ2L6I79hK3jpjQj4SO_qdEjSyBxmtDaTQ1GwxDq3p3gOtyewdpHrRDNf5m8-8TQXB9dbd_z8uOvktTnO3rDBk5Jw2tox8DpBv7vZSciKwJ6LMmbpTK_xd-QxomdE_eKaFEGP1joVhp2UPij_-ioc",
+                    theme,
                   ),
                 ],
               ),
@@ -112,52 +117,37 @@ class _ActivityDetailsPageState extends State<ActivityDetail> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 8.0,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFF2780D),
+                backgroundColor: theme.colorScheme.primary,
                 minimumSize: const Size.fromHeight(50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
               onPressed: () {},
-              child: const Text(
+              child: Text(
                 "Inscribirse",
-                style: TextStyle(
+                style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: theme.colorScheme.onPrimary,
                 ),
               ),
             ),
           ),
           BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
-            selectedItemColor: const Color(0xFFF2780D),
-            unselectedItemColor: Colors.grey,
+            selectedItemColor: theme.colorScheme.primary,
+            unselectedItemColor: theme.colorScheme.onBackground.withOpacity(0.6),
             currentIndex: _selectedIndex,
             onTap: _onItemTapped,
             items: const [
               BottomNavigationBarItem(icon: Icon(Icons.home), label: "Inicio"),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.search),
-                label: "Explorar",
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.event),
-                label: "Mis Actividades",
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.bar_chart),
-                label: "Dashboard",
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: "Perfil",
-              ),
+              BottomNavigationBarItem(icon: Icon(Icons.search), label: "Explorar"),
+              BottomNavigationBarItem(icon: Icon(Icons.event), label: "Mis Actividades"),
+              BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Dashboard"),
+              BottomNavigationBarItem(icon: Icon(Icons.person), label: "Perfil"),
             ],
           ),
         ],
@@ -165,22 +155,24 @@ class _ActivityDetailsPageState extends State<ActivityDetail> {
     );
   }
 
-  Widget _buildInfoSection(String title, String content) {
+  Widget _buildInfoSection(String title, String content, ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
-            fontSize: 18,
-            color: Color(0xFF221810),
+            color: theme.colorScheme.onBackground,
           ),
         ),
         const SizedBox(height: 4),
         Text(
           content,
-          style: const TextStyle(color: Color(0xFF221810), height: 1.4),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onBackground,
+            height: 1.4,
+          ),
         ),
       ],
     );
@@ -191,16 +183,16 @@ class _ActivityDetailsPageState extends State<ActivityDetail> {
     String name,
     String org,
     String imageUrl,
+    ThemeData theme,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
-            fontSize: 18,
-            color: Color(0xFF221810),
+            color: theme.colorScheme.onBackground,
           ),
         ),
         const SizedBox(height: 8),
@@ -213,14 +205,17 @@ class _ActivityDetailsPageState extends State<ActivityDetail> {
               children: [
                 Text(
                   name,
-                  style: const TextStyle(
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF221810),
+                    color: theme.colorScheme.onBackground,
                   ),
                 ),
                 Text(
                   org,
-                  style: const TextStyle(color: Colors.black54, fontSize: 14),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onBackground.withOpacity(0.7),
+                    fontSize: 14,
+                  ),
                 ),
               ],
             ),

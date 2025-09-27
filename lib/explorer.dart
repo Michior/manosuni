@@ -37,19 +37,22 @@ class _ExplorerState extends State<Explorer> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
+      backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
         centerTitle: true,
-        title: const Text(
+        title: Text(
           "Explorar",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: theme.colorScheme.background,
         toolbarHeight: 80,
         elevation: 1,
         actions: [
           IconButton(
-            icon: const Icon(Icons.tune, color: Colors.black),
+            icon: Icon(Icons.tune, color: theme.colorScheme.onBackground),
             onPressed: () {},
           ),
         ],
@@ -60,13 +63,15 @@ class _ExplorerState extends State<Explorer> {
             padding: const EdgeInsets.all(12.0),
             child: TextField(
               decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: Icon(Icons.search, color: theme.colorScheme.onBackground),
                 hintText: "Buscar oportunidades",
+                hintStyle: TextStyle(color: theme.colorScheme.onBackground.withOpacity(0.5)),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
                 ),
                 filled: true,
-                fillColor: Colors.grey[100],
+                fillColor: theme.colorScheme.surface,
               ),
             ),
           ),
@@ -74,14 +79,35 @@ class _ExplorerState extends State<Explorer> {
             height: 45,
             child: ListView(
               scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
               children: [
-                FilterChip(label: const Text("Área de interés"), onSelected: (_) {}),
+                FilterChip(
+                  label: const Text("Área de interés"),
+                  onSelected: (_) {},
+                  selectedColor: theme.colorScheme.primary.withOpacity(0.2),
+                  backgroundColor: theme.colorScheme.surface,
+                ),
                 const SizedBox(width: 8),
-                FilterChip(label: const Text("Modalidad"), onSelected: (_) {}),
+                FilterChip(
+                  label: const Text("Modalidad"),
+                  onSelected: (_) {},
+                  selectedColor: theme.colorScheme.primary.withOpacity(0.2),
+                  backgroundColor: theme.colorScheme.surface,
+                ),
                 const SizedBox(width: 8),
-                FilterChip(label: const Text("Fecha"), onSelected: (_) {}),
+                FilterChip(
+                  label: const Text("Fecha"),
+                  onSelected: (_) {},
+                  selectedColor: theme.colorScheme.primary.withOpacity(0.2),
+                  backgroundColor: theme.colorScheme.surface,
+                ),
                 const SizedBox(width: 8),
-                FilterChip(label: const Text("Ubicación"), onSelected: (_) {}),
+                FilterChip(
+                  label: const Text("Ubicación"),
+                  onSelected: (_) {},
+                  selectedColor: theme.colorScheme.primary.withOpacity(0.2),
+                  backgroundColor: theme.colorScheme.surface,
+                ),
               ],
             ),
           ),
@@ -137,8 +163,8 @@ class _ExplorerState extends State<Explorer> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFFF2780D),
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: theme.colorScheme.primary,
+        unselectedItemColor: theme.colorScheme.onBackground.withOpacity(0.6),
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         items: const [

@@ -59,7 +59,7 @@ class Register extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      keyboardType: TextInputType.emailAddress,
+                      keyboardType: TextInputType.text,
                     ),
                     const SizedBox(height: 16),
 
@@ -87,7 +87,7 @@ class Register extends StatelessWidget {
                       ),
                       obscureText: true,
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 24),
 
                     // --- Register button ---
                     SizedBox(
@@ -105,15 +105,11 @@ class Register extends StatelessWidget {
                           elevation: 4,
                         ),
                         child: const Text(
-                          "Registarme",
+                          "Registrarme",
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
-
-                    const SizedBox(height: 24),
-
                   ],
                 ),
               ),
@@ -140,9 +136,9 @@ class Register extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                       recognizer: TapGestureRecognizer()
-                      ..onTap = () {
-                        Navigator.pushNamed(context, '/login');
-                      },
+                        ..onTap = () {
+                          Navigator.pushNamed(context, '/login');
+                        },
                     ),
                   ],
                 ),

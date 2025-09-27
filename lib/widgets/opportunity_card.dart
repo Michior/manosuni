@@ -21,6 +21,8 @@ class OpportunityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -45,6 +47,7 @@ class OpportunityCard extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 2,
         margin: const EdgeInsets.only(bottom: 12),
+        color: theme.colorScheme.surface, // fondo dinámico
         child: Column(
           children: [
             ListTile(
@@ -59,20 +62,32 @@ class OpportunityCard extends StatelessWidget {
               ),
               title: Text(
                 title,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface, // texto dinámico
+                ),
               ),
-              subtitle: Text(organization),
+              subtitle: Text(
+                organization,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurface.withOpacity(0.7),
+                ),
+              ),
               trailing: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     places.split(" ")[0],
-                    style: const TextStyle(
-                        color: Color(0xFFF2780D), fontWeight: FontWeight.bold),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   Text(
                     "lugares",
-                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    ),
                   ),
                 ],
               ),
@@ -82,13 +97,21 @@ class OpportunityCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(date,
-                      style: TextStyle(color: Colors.grey[600], fontSize: 12)),
-                  Text(type,
-                      style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                  Text(
+                    date,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    ),
+                  ),
+                  Text(
+                    type,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    ),
+                  ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),

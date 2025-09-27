@@ -15,7 +15,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
       _selectedIndex = index;
     });
 
-    // Redirecciones según el índice
     switch (index) {
       case 0:
         Navigator.pushNamed(context, '/');
@@ -37,8 +36,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: theme.colorScheme.surface,
       body: SafeArea(
         child: Column(
           children: [
@@ -49,6 +50,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      // --- Imagen ---
                       Container(
                         height: 250,
                         width: 250,
@@ -63,26 +65,30 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         ),
                       ),
                       const SizedBox(height: 24),
+
+                      // --- Título ---
                       Text(
                         "Connect, Contribute, and Validate",
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 12),
+
+                      // --- Descripción ---
                       Text(
                         "Find meaningful volunteer opportunities with NGOs and easily validate your social hours for university credit.",
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.grey[700],
-                            ),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: Colors.grey[700],
+                        ),
                       ),
                       const SizedBox(height: 32),
+
+                      // --- Botón Registro ---
                       ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/register');
-                        },
+                        onPressed: () => Navigator.pushNamed(context, '/register'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFF2780D),
                           minimumSize: const Size(double.infinity, 48),
@@ -96,10 +102,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         ),
                       ),
                       const SizedBox(height: 12),
+
+                      // --- Botón Login ---
                       OutlinedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/login');
-                        },
+                        onPressed: () => Navigator.pushNamed(context, '/login'),
                         style: OutlinedButton.styleFrom(
                           minimumSize: const Size(double.infinity, 48),
                           side: BorderSide(color: const Color(0xFFF2780D).withOpacity(0.5)),
@@ -118,6 +124,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 ),
               ),
             ),
+
+            // --- Bottom Navigation ---
             Container(
               decoration: BoxDecoration(
                 border: Border(

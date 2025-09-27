@@ -37,14 +37,16 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F7F5),
+      backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
         toolbarHeight: 80,
-        backgroundColor: const Color(0xFFF8F7F5),
+        backgroundColor: theme.colorScheme.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF221810)),
+          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onBackground),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -58,20 +60,18 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ),
             const SizedBox(width: 10),
-            const Text(
+            Text(
               "Mi Dashboard",
-              style: TextStyle(
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                fontSize: 18,
-                color: Color(0xFF221810),
+                color: theme.colorScheme.onBackground,
               ),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications),
-            color: const Color(0xFF221810),
+            icon: Icon(Icons.notifications, color: theme.colorScheme.onBackground),
             onPressed: () {},
           ),
         ],
@@ -87,26 +87,25 @@ class _DashboardPageState extends State<DashboardPage> {
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF2780D).withOpacity(0.1),
+                      color: theme.colorScheme.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
                           "Horas Acumuladas",
-                          style: TextStyle(
-                            color: Color(0xFFF2780D),
+                          style: theme.textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w500,
+                            color: theme.colorScheme.primary,
                           ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
                           "120",
-                          style: TextStyle(
-                            fontSize: 28,
+                          style: theme.textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF221810),
+                            color: theme.colorScheme.onBackground,
                           ),
                         ),
                       ],
@@ -118,26 +117,25 @@ class _DashboardPageState extends State<DashboardPage> {
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF2780D).withOpacity(0.1),
+                      color: theme.colorScheme.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
                           "Horas Pendientes",
-                          style: TextStyle(
-                            color: Color(0xFFF2780D),
+                          style: theme.textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w500,
+                            color: theme.colorScheme.primary,
                           ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
                           "30",
-                          style: TextStyle(
-                            fontSize: 28,
+                          style: theme.textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF221810),
+                            color: theme.colorScheme.onBackground,
                           ),
                         ),
                       ],
@@ -147,12 +145,11 @@ class _DashboardPageState extends State<DashboardPage> {
               ],
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               "Próximas Actividades",
-              style: TextStyle(
-                fontSize: 18,
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF221810),
+                color: theme.colorScheme.onBackground,
               ),
             ),
             const SizedBox(height: 12),
@@ -169,12 +166,11 @@ class _DashboardPageState extends State<DashboardPage> {
                   "https://lh3.googleusercontent.com/aida-public/AB6AXuAEDBmwfjgPDOfBgYQeoYyiHOvPSpaCcG9EHu9ojxzP-z7T0-qD_6x9hYKbRmKbyI4VhJDiv5o9ulX6bZPg9myxAd6DScqJE1l2x8TElr4x7fz-M6SZhT1_ANXSVQtHgCGbwbqba75HnA736ybLV3u8Hxeg7jYDyuVBsxvCg6jRNGObQ5LdocX9E0IOy6Axf0lpB4iu2WQXgK3D4sCSO-tHqJ7-low2FqGjOBRPzUVXleSpwvcTwbOxRqHGCyae4qFBIGO91CeQ65Y",
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               "Actividades Recomendadas",
-              style: TextStyle(
-                fontSize: 18,
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF221810),
+                color: theme.colorScheme.onBackground,
               ),
             ),
             const SizedBox(height: 12),
@@ -189,8 +185,8 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
-        selectedItemColor: const Color(0xFFF2780D),
-        unselectedItemColor: Colors.black.withOpacity(0.5),
+        selectedItemColor: theme.colorScheme.primary,
+        unselectedItemColor: theme.colorScheme.onBackground.withOpacity(0.6),
         type: BottomNavigationBarType.fixed,
         onTap: _onItemTapped,
         items: const [

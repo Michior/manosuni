@@ -6,22 +6,21 @@ class Login extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F7F5),
+        backgroundColor: theme.colorScheme.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF221810)),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: SafeArea(
         child: Column(
           children: [
-            // --- Main content ---
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 150),
@@ -31,21 +30,18 @@ class Login extends StatelessWidget {
                     // Title
                     Text(
                       "ManosUni",
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onSurface,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
                     Text(
                       "Welcome back, let's make a difference.",
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.color
-                                ?.withOpacity(0.6),
-                          ),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 40),
@@ -54,10 +50,12 @@ class Login extends StatelessWidget {
                     TextField(
                       decoration: InputDecoration(
                         hintText: "Email",
-                        prefixIcon: const Icon(Icons.email_outlined),
+                        prefixIcon: Icon(Icons.email_outlined, color: theme.colorScheme.onSurface),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
+                        filled: true,
+                        fillColor: theme.colorScheme.background,
                       ),
                       keyboardType: TextInputType.emailAddress,
                     ),
@@ -67,10 +65,12 @@ class Login extends StatelessWidget {
                     TextField(
                       decoration: InputDecoration(
                         hintText: "Password",
-                        prefixIcon: const Icon(Icons.lock_outline),
+                        prefixIcon: Icon(Icons.lock_outline, color: theme.colorScheme.onSurface),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
+                        filled: true,
+                        fillColor: theme.colorScheme.background,
                       ),
                       obscureText: true,
                     ),
@@ -81,10 +81,10 @@ class Login extends StatelessWidget {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () {},
-                        child: const Text(
+                        child: Text(
                           "Forgot Password?",
                           style: TextStyle(
-                            color: Color(0xFFF2780D), // primary
+                            color: theme.colorScheme.primary,
                           ),
                         ),
                       ),
@@ -95,11 +95,9 @@ class Login extends StatelessWidget {
                       width: double.infinity,
                       height: 52,
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/dashboard');
-                        },
+                        onPressed: () => Navigator.pushNamed(context, '/dashboard'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFF2780D),
+                          backgroundColor: theme.colorScheme.primary,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -112,9 +110,6 @@ class Login extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-
-                    const SizedBox(height: 24),
-
                   ],
                 ),
               ),
@@ -126,24 +121,18 @@ class Login extends StatelessWidget {
               child: Text.rich(
                 TextSpan(
                   text: "¿No tienes cuenta? ",
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.color
-                            ?.withOpacity(0.6),
-                      ),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  ),
                   children: [
                     TextSpan(
                       text: "Registrarse",
-                      style: const TextStyle(
-                        color: Color(0xFFF2780D), // primary
+                      style: TextStyle(
+                        color: theme.colorScheme.primary,
                         fontWeight: FontWeight.bold,
                       ),
                       recognizer: TapGestureRecognizer()
-                      ..onTap = () {
-                        Navigator.pushNamed(context, '/register');
-                      },
+                        ..onTap = () => Navigator.pushNamed(context, '/register'),
                     ),
                   ],
                 ),
