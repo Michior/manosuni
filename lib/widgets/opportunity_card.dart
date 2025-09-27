@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'opportunity_details.dart';
+import '../opportunity_details.dart';
 
 class OpportunityCard extends StatelessWidget {
   final String title;

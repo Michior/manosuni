@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'opportunity_card.dart'; // Importa el componente
+import 'widgets/opportunity_card.dart'; // Importa el componente
 
 class Explorer extends StatefulWidget {
   const Explorer({super.key});
@@ -113,6 +113,22 @@ class _ExplorerState extends State<Explorer> {
                   date: "Sáb, 1 de Junio",
                   type: "Presencial",
                   imageUrl: "https://picsum.photos/102/102",
+                ),
+                OpportunityCard(
+                  title: "Limpieza de playas",
+                  organization: "Activate",
+                  places: "15 lugares",
+                  date: "Dom, 26 de Mayo",
+                  type: "Presencial",
+                  imageUrl: "https://picsum.photos/101/101",
+                ),
+                OpportunityCard(
+                  title: "Creación de formularios",
+                  organization: "Fundación Futuro",
+                  places: "15 lugares",
+                  date: "Dom, 26 de Mayo",
+                  type: "Remoto",
+                  imageUrl: "https://picsum.photos/101/101",
                 ),
               ],
             ),

@@ -128,7 +128,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 type: BottomNavigationBarType.fixed,
                 currentIndex: _selectedIndex,
                 selectedItemColor: const Color(0xFFF2780D),
-                unselectedItemColor: Colors.grey,
+                unselectedItemColor: const Color.fromARGB(255, 183, 181, 181),
                 onTap: _onItemTapped,
                 items: const [
                   BottomNavigationBarItem(icon: Icon(Icons.home), label: "Inicio"),

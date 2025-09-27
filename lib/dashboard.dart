@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'activity_card.dart';
+import 'widgets/activity_card.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});

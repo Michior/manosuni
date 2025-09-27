@@ -3,6 +3,26 @@ import 'package:flutter/material.dart';
 class MisActividades extends StatelessWidget {
   const MisActividades({super.key});
 
+  void _onItemTapped(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        Navigator.pushNamed(context, '/'); // Inicio
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/explorer'); // Explorar
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/activities'); // Actividades
+        break;
+      case 3:
+        Navigator.pushNamed(context, '/dashboard'); // Dashboard
+        break;
+      case 4:
+        Navigator.pushNamed(context, '/profile'); // Perfil
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,7 +92,7 @@ class MisActividades extends StatelessWidget {
                         const SizedBox(height: 8),
                         ElevatedButton(
                           onPressed: () {
-                            // Acción: ver detalles
+                            Navigator.pushNamed(context, '/detalles'); // 👈 Redirección a página de detalles
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0x33F2780D),
@@ -144,7 +164,7 @@ class MisActividades extends StatelessWidget {
                       child: LinearProgressIndicator(
                         value: 0.75,
                         color: const Color(0xFFF2780D),
-                        backgroundColor: Colors.grey[300],
+                        backgroundColor: Colors.grey,
                         minHeight: 8,
                       ),
                     ),
@@ -165,13 +185,11 @@ class MisActividades extends StatelessWidget {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Inicio"),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: "Explorar"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.event), label: "Mis Actividades"),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: "Actividades"),
+          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Dashboard"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Perfil"),
         ],
-        onTap: (index) {
-          // Aquí puedes cambiar de página
-        },
+        onTap: (index) => _onItemTapped(context, index), // 👈 lógica de navegación
       ),
     );
   }
