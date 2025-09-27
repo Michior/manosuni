@@ -1,21 +1,22 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'theme/app_theme.dart'; // Importa tu archivo de AppTheme
 
 class Register extends StatelessWidget {
   const Register({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context); // Definimos el theme
+
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F7F5),
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF221810)),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          icon: Icon(Icons.arrow_back, color: theme.appBarTheme.foregroundColor),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: SafeArea(
@@ -31,21 +32,18 @@ class Register extends StatelessWidget {
                     // Title
                     Text(
                       "ManosUni",
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.appBarTheme.foregroundColor,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
                     Text(
                       "Welcome, let's make a difference.",
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.color
-                                ?.withOpacity(0.6),
-                          ),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.appBarTheme.foregroundColor?.withOpacity(0.6),
+                      ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 40),
@@ -54,10 +52,12 @@ class Register extends StatelessWidget {
                     TextField(
                       decoration: InputDecoration(
                         hintText: "Nombre",
-                        prefixIcon: const Icon(Icons.person),
+                        prefixIcon: Icon(Icons.person, color: theme.primaryColor),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
+                        filled: true,
+                        fillColor: theme.scaffoldBackgroundColor.withOpacity(0.05),
                       ),
                       keyboardType: TextInputType.text,
                     ),
@@ -67,10 +67,12 @@ class Register extends StatelessWidget {
                     TextField(
                       decoration: InputDecoration(
                         hintText: "Email",
-                        prefixIcon: const Icon(Icons.email_outlined),
+                        prefixIcon: Icon(Icons.email_outlined, color: theme.primaryColor),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
+                        filled: true,
+                        fillColor: theme.scaffoldBackgroundColor.withOpacity(0.05),
                       ),
                       keyboardType: TextInputType.emailAddress,
                     ),
@@ -80,10 +82,12 @@ class Register extends StatelessWidget {
                     TextField(
                       decoration: InputDecoration(
                         hintText: "Password",
-                        prefixIcon: const Icon(Icons.lock_outline),
+                        prefixIcon: Icon(Icons.lock_outline, color: theme.primaryColor),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
+                        filled: true,
+                        fillColor: theme.scaffoldBackgroundColor.withOpacity(0.05),
                       ),
                       obscureText: true,
                     ),
@@ -94,19 +98,20 @@ class Register extends StatelessWidget {
                       width: double.infinity,
                       height: 52,
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/dashboard');
-                        },
+                        onPressed: () => Navigator.pushNamed(context, '/dashboard'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFF2780D),
+                          backgroundColor: theme.primaryColor,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                           elevation: 4,
                         ),
-                        child: const Text(
+                        child: Text(
                           "Registrarme",
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: theme.appBarTheme.foregroundColor, // cambia con tema oscuro
+                          ),
                         ),
                       ),
                     ),
@@ -121,24 +126,18 @@ class Register extends StatelessWidget {
               child: Text.rich(
                 TextSpan(
                   text: "¿Ya tienes cuenta? ",
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.color
-                            ?.withOpacity(0.6),
-                      ),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.appBarTheme.foregroundColor?.withOpacity(0.6),
+                  ),
                   children: [
                     TextSpan(
                       text: "Iniciar Sesión",
-                      style: const TextStyle(
-                        color: Color(0xFFF2780D), // primary
+                      style: TextStyle(
+                        color: theme.primaryColor,
                         fontWeight: FontWeight.bold,
                       ),
                       recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Navigator.pushNamed(context, '/login');
-                        },
+                        ..onTap = () => Navigator.pushNamed(context, '/login'),
                     ),
                   ],
                 ),

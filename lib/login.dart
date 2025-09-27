@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'theme/app_theme.dart'; // Asegúrate de tener este archivo
 
 class Login extends StatelessWidget {
   const Login({super.key});
@@ -9,9 +10,9 @@ class Login extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
-        backgroundColor: theme.colorScheme.surface,
+        backgroundColor: theme.colorScheme.background,
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
@@ -50,12 +51,12 @@ class Login extends StatelessWidget {
                     TextField(
                       decoration: InputDecoration(
                         hintText: "Email",
-                        prefixIcon: Icon(Icons.email_outlined, color: theme.colorScheme.onSurface),
+                        prefixIcon: Icon(Icons.email_outlined, color: theme.primaryColor),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         filled: true,
-                        fillColor: theme.colorScheme.background,
+                        fillColor: theme.colorScheme.surface,
                       ),
                       keyboardType: TextInputType.emailAddress,
                     ),
@@ -65,12 +66,12 @@ class Login extends StatelessWidget {
                     TextField(
                       decoration: InputDecoration(
                         hintText: "Password",
-                        prefixIcon: Icon(Icons.lock_outline, color: theme.colorScheme.onSurface),
+                        prefixIcon: Icon(Icons.lock_outline, color: theme.primaryColor),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         filled: true,
-                        fillColor: theme.colorScheme.background,
+                        fillColor: theme.colorScheme.surface,
                       ),
                       obscureText: true,
                     ),
@@ -103,9 +104,9 @@ class Login extends StatelessWidget {
                           ),
                           elevation: 4,
                         ),
-                        child: const Text(
+                        child: Text(
                           "Iniciar Sesión",
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          style: TextStyle(fontSize: 16, color: theme.colorScheme.onSurface),
                         ),
                       ),
                     ),

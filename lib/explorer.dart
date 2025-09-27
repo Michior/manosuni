@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'widgets/opportunity_card.dart'; // Importa el componente
+import 'widgets/opportunity_card.dart';
+import 'theme/app_theme.dart'; // Asegúrate de importar tu AppTheme
 
 class Explorer extends StatefulWidget {
   const Explorer({super.key});
@@ -40,19 +41,22 @@ class _ExplorerState extends State<Explorer> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.background,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         centerTitle: true,
         title: Text(
           "Explorar",
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: theme.appBarTheme.foregroundColor,
+          ),
         ),
-        backgroundColor: theme.colorScheme.background,
+        backgroundColor: theme.scaffoldBackgroundColor,
         toolbarHeight: 80,
         elevation: 1,
         actions: [
           IconButton(
-            icon: Icon(Icons.tune, color: theme.colorScheme.onBackground),
+            icon: Icon(Icons.tune, color: theme.appBarTheme.foregroundColor),
             onPressed: () {},
           ),
         ],
@@ -63,15 +67,17 @@ class _ExplorerState extends State<Explorer> {
             padding: const EdgeInsets.all(12.0),
             child: TextField(
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.search, color: theme.colorScheme.onBackground),
+                prefixIcon: Icon(Icons.search, color: theme.primaryColor),
                 hintText: "Buscar oportunidades",
-                hintStyle: TextStyle(color: theme.colorScheme.onBackground.withOpacity(0.5)),
+                hintStyle: TextStyle(
+                  color: theme.appBarTheme.foregroundColor?.withOpacity(0.5),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
-                fillColor: theme.colorScheme.surface,
+                fillColor: theme.scaffoldBackgroundColor.withOpacity(0.05),
               ),
             ),
           ),
@@ -84,29 +90,29 @@ class _ExplorerState extends State<Explorer> {
                 FilterChip(
                   label: const Text("Área de interés"),
                   onSelected: (_) {},
-                  selectedColor: theme.colorScheme.primary.withOpacity(0.2),
-                  backgroundColor: theme.colorScheme.surface,
+                  selectedColor: theme.primaryColor.withOpacity(0.2),
+                  backgroundColor: theme.scaffoldBackgroundColor.withOpacity(0.05),
                 ),
                 const SizedBox(width: 8),
                 FilterChip(
                   label: const Text("Modalidad"),
                   onSelected: (_) {},
-                  selectedColor: theme.colorScheme.primary.withOpacity(0.2),
-                  backgroundColor: theme.colorScheme.surface,
+                  selectedColor: theme.primaryColor.withOpacity(0.2),
+                  backgroundColor: theme.scaffoldBackgroundColor.withOpacity(0.05),
                 ),
                 const SizedBox(width: 8),
                 FilterChip(
                   label: const Text("Fecha"),
                   onSelected: (_) {},
-                  selectedColor: theme.colorScheme.primary.withOpacity(0.2),
-                  backgroundColor: theme.colorScheme.surface,
+                  selectedColor: theme.primaryColor.withOpacity(0.2),
+                  backgroundColor: theme.scaffoldBackgroundColor.withOpacity(0.05),
                 ),
                 const SizedBox(width: 8),
                 FilterChip(
                   label: const Text("Ubicación"),
                   onSelected: (_) {},
-                  selectedColor: theme.colorScheme.primary.withOpacity(0.2),
-                  backgroundColor: theme.colorScheme.surface,
+                  selectedColor: theme.primaryColor.withOpacity(0.2),
+                  backgroundColor: theme.scaffoldBackgroundColor.withOpacity(0.05),
                 ),
               ],
             ),
@@ -163,8 +169,8 @@ class _ExplorerState extends State<Explorer> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: theme.colorScheme.primary,
-        unselectedItemColor: theme.colorScheme.onBackground.withOpacity(0.6),
+        selectedItemColor: theme.primaryColor,
+        unselectedItemColor: theme.appBarTheme.foregroundColor?.withOpacity(0.6),
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         items: const [
