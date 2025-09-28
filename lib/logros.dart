@@ -7,6 +7,23 @@ class LogrosScreen extends StatelessWidget {
   static const Color accentSoft = Color(0xFFFFF1E6);
   static const Color bg = Color(0xFFF6F5F2);
 
+  void _onItemTapped(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        Navigator.pushNamed(context, '/dashboard'); 
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/explorer');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/activities'); 
+        break;
+      case 3:
+        Navigator.pushNamed(context, '/profile'); 
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
@@ -35,7 +52,9 @@ class LogrosScreen extends StatelessWidget {
           Card(
             elevation: 0,
             color: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
               child: Column(
@@ -104,10 +123,7 @@ class LogrosScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
 
-                  const _StatCard(
-                    label: 'Horas de voluntariado',
-                    value: '150',
-                  ),
+                  const _StatCard(label: 'Horas de voluntariado', value: '150'),
                   const SizedBox(height: 12),
 
                   const _StatCard(
@@ -120,10 +136,10 @@ class LogrosScreen extends StatelessWidget {
           ),
         ],
       ),
-      
+
       bottomNavigationBar: NavigationBar(
-        selectedIndex: 3,
-        onDestinationSelected: (_) {},
+        selectedIndex: 3, 
+        onDestinationSelected: (i) => _onItemTapped(context, i),
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
@@ -175,10 +191,7 @@ class _BadgeItem extends StatelessWidget {
           Container(
             width: 96,
             height: 96,
-            decoration: BoxDecoration(
-              color: bgColor,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
             alignment: Alignment.center,
             child: Icon(icon, color: iconColor, size: 36),
           ),
@@ -223,7 +236,11 @@ class _StatCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               alignment: Alignment.center,
-              child: const Icon(Icons.insights_rounded, color: LogrosScreen.accent, size: 22),
+              child: const Icon(
+                Icons.insights_rounded,
+                color: LogrosScreen.accent,
+                size: 22,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(

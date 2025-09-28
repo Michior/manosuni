@@ -7,6 +7,23 @@ class PublicarActividadScreen extends StatelessWidget {
   static const Color accent = Color(0xFFF39A4B);
   static const Color accentSoft = Color(0xFFFFF1E6);
 
+  void _onItemTapped(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        Navigator.pushNamed(context, '/dashboard-ong');
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/publicar-actividad');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/gestion-actividades');
+        break;
+      case 3:
+        Navigator.pushNamed(context, '/profile');
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
@@ -82,7 +99,7 @@ class PublicarActividadScreen extends StatelessWidget {
 
                   label('Fecha'),
                   TextField(
-                    readOnly: true, 
+                    readOnly: true,
                     decoration: deco(
                       'Seleccionar fecha',
                       icon: Icons.calendar_today_rounded,
@@ -98,7 +115,7 @@ class PublicarActividadScreen extends StatelessWidget {
                           children: [
                             label('Inicio'),
                             TextField(
-                              readOnly: true, 
+                              readOnly: true,
                               decoration: deco(
                                 '10:00 AM',
                                 icon: Icons.schedule_rounded,
@@ -114,7 +131,7 @@ class PublicarActividadScreen extends StatelessWidget {
                           children: [
                             label('Fin'),
                             TextField(
-                              readOnly: true, 
+                              readOnly: true,
                               decoration: deco(
                                 '12:00 PM',
                                 icon: Icons.schedule_rounded,
@@ -149,11 +166,47 @@ class PublicarActividadScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
 
-        
-                  label('Cupos'),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            label('Cupos'),
+                            TextField(
+                              keyboardType: TextInputType.number,
+                              decoration: deco(
+                                'Ej. 20',
+                                icon: Icons.people_alt_rounded,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            label('Duración (horas)'),
+                            TextField(
+                              keyboardType: TextInputType.number,
+                              decoration: deco(
+                                'Ej. 2',
+                                icon: Icons.timer_outlined,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+
+                  label('Requisitos'),
                   TextField(
-                    keyboardType: TextInputType.number,
-                    decoration: deco('Ej. 20', icon: Icons.people_alt_rounded),
+                    maxLines: 3,
+                    decoration: deco('Ej. Mayor de 18, ropa cómoda, etc.'),
                   ),
                   const SizedBox(height: 14),
 
@@ -161,14 +214,13 @@ class PublicarActividadScreen extends StatelessWidget {
                   TextField(
                     maxLines: 5,
                     decoration: deco(
-                      'Describe la actividad, tareas y requisitos',
+                      'Describe la actividad, tareas y objetivos',
                     ),
                   ),
                   const SizedBox(height: 16),
 
-    
                   label('Imagen (opcional)'),
-                  _UploadMock(),
+                  const _UploadMock(),
                 ],
               ),
             ),
@@ -178,7 +230,7 @@ class PublicarActividadScreen extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: FilledButton(
-              onPressed: () {}, //
+              onPressed: () {},
               style: FilledButton.styleFrom(
                 backgroundColor: accent,
                 foregroundColor: Colors.white,
@@ -196,10 +248,9 @@ class PublicarActividadScreen extends StatelessWidget {
         ],
       ),
 
-   
       bottomNavigationBar: NavigationBar(
-        selectedIndex: 1, 
-        onDestinationSelected: (_) {},
+        selectedIndex: 1,
+        onDestinationSelected: (i) => _onItemTapped(context, i),
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
@@ -261,6 +312,8 @@ class _ChipMock extends StatelessWidget {
 }
 
 class _UploadMock extends StatelessWidget {
+  const _UploadMock();
+
   @override
   Widget build(BuildContext context) {
     return InkWell(

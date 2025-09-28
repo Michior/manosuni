@@ -29,6 +29,23 @@ class _GestionActividadesScreenState extends State<GestionActividadesScreen>
     super.dispose();
   }
 
+  void _onItemTapped(int index) {
+    switch (index) {
+      case 0:
+        Navigator.pushNamed(context, '/dashboard-ong');
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/gestion-actividades');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/gestion-voluntarios');
+        break;
+      case 3:
+        Navigator.pushNamed(context, '/profile');
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
@@ -101,7 +118,7 @@ class _GestionActividadesScreenState extends State<GestionActividadesScreen>
 
           ListView(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            children: [
+            children: const [
               _EmptyHint(
                 icon: Icons.pending_actions_rounded,
                 text: 'No hay actividades en curso.',
@@ -111,7 +128,7 @@ class _GestionActividadesScreenState extends State<GestionActividadesScreen>
 
           ListView(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            children: [
+            children: const [
               _EmptyHint(
                 icon: Icons.check_circle_outline_rounded,
                 text: 'Aún no hay actividades completadas.',
@@ -121,9 +138,15 @@ class _GestionActividadesScreenState extends State<GestionActividadesScreen>
         ],
       ),
 
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.pushNamed(context, '/publicar-actividad'),
+        tooltip: 'Añadir actividad',
+        child: const Icon(Icons.add_rounded),
+      ),
+
       bottomNavigationBar: NavigationBar(
         selectedIndex: 1,
-        onDestinationSelected: (_) {},
+        onDestinationSelected: _onItemTapped,
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
@@ -210,13 +233,13 @@ class _ActivityCard extends StatelessWidget {
               children: [
                 _SecondaryButton(
                   label: 'Editar',
-                  onPressed: () {}, 
+                  onPressed: () {}, // mock
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: _PrimaryButton(
                     label: 'Cerrar inscripciones',
-                    onPressed: () {}, 
+                    onPressed: () {},
                   ),
                 ),
               ],

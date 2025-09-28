@@ -12,8 +12,25 @@ class _CalendarPersonalScreenState extends State<CalendarPersonalScreen> {
   static const Color accentSoft = Color(0xFFFFF1E6);
   static const Color bg = Color(0xFFF6F5F2);
 
-  DateTime _month = DateTime(2024, 5, 1); 
-  int? _selectedDay = 5; 
+  DateTime _month = DateTime(2024, 5, 1);
+  int? _selectedDay = 5;
+
+  void _onItemTapped(int index) {
+    switch (index) {
+      case 0:
+        Navigator.pushNamed(context, '/dashboard');
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/explorer'); 
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/activities'); 
+        break;
+      case 3:
+        Navigator.pushNamed(context, '/profile'); 
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,10 +70,7 @@ class _CalendarPersonalScreenState extends State<CalendarPersonalScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _IconPill(
-                        icon: Icons.chevron_left_rounded,
-                        onTap: () {},
-                      ),
+                      _IconPill(icon: Icons.chevron_left_rounded, onTap: () {}),
                       Text(
                         'Mayo 2024',
                         style: text.titleMedium?.copyWith(
@@ -66,7 +80,7 @@ class _CalendarPersonalScreenState extends State<CalendarPersonalScreen> {
                       ),
                       _IconPill(
                         icon: Icons.chevron_right_rounded,
-                        onTap: () {}, 
+                        onTap: () {},
                       ),
                     ],
                   ),
@@ -104,7 +118,7 @@ class _CalendarPersonalScreenState extends State<CalendarPersonalScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          _ActivityTile(
+          const _ActivityTile(
             icon: Icons.event,
             iconBg: accentSoft,
             iconColor: accent,
@@ -112,7 +126,7 @@ class _CalendarPersonalScreenState extends State<CalendarPersonalScreen> {
             subtitle: '10:00 AM - 12:00 PM',
           ),
           const SizedBox(height: 12),
-          _ActivityTile(
+          const _ActivityTile(
             icon: Icons.search_rounded,
             iconBg: accentSoft,
             iconColor: accent,
@@ -124,7 +138,7 @@ class _CalendarPersonalScreenState extends State<CalendarPersonalScreen> {
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: 2, 
-        onDestinationSelected: (_) {}, // ¿conexion
+        onDestinationSelected: _onItemTapped,
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
@@ -197,7 +211,7 @@ class _Dow extends StatelessWidget {
 }
 
 class _MonthGrid extends StatelessWidget {
-  final DateTime month; 
+  final DateTime month;
   final int? selectedDay;
   final int? dotDay;
   final void Function(int day) onTapDay;

@@ -71,8 +71,13 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications, color: theme.colorScheme.onBackground),
-            onPressed: () {},
+            icon: Icon(
+              Icons.notifications,
+              color: theme.colorScheme.onBackground,
+            ),
+            onPressed: () {
+              Navigator.pushNamed(context, '/notificaciones');
+            },
           ),
         ],
       ),
@@ -192,8 +197,14 @@ class _DashboardPageState extends State<DashboardPage> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Inicio"),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: "Explorar"),
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: "Actividades"),
-          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Dashboard"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month),
+            label: "Actividades",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart),
+            label: "Dashboard",
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Perfil"),
         ],
       ),

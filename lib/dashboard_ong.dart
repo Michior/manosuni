@@ -3,12 +3,28 @@ import 'package:flutter/material.dart';
 class DashboardOngScreen extends StatelessWidget {
   const DashboardOngScreen({super.key});
 
-  // Paleta simple
   static const Color bg = Color(0xFFF6F5F2);
   static const Color panel = Colors.white;
   static const Color titleColor = Color(0xFF1E1E1E);
   static const Color subtle = Color(0xFF7A7A7A);
-  static const Color accentRed = Color(0xFFE53935); 
+  static const Color accentRed = Color(0xFFE53935);
+
+  void _onItemTapped(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        Navigator.pushNamed(context, '/dashboard-ong');
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/gestion-actividades');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/gestion-voluntarios');
+        break;
+      case 3:
+        Navigator.pushNamed(context, '/profile');
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +36,8 @@ class DashboardOngScreen extends StatelessWidget {
         backgroundColor: bg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.menu_rounded),
-          onPressed: () {}, 
+          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          onPressed: () => Navigator.of(context).maybePop(),
         ),
         centerTitle: true,
         title: Text(
@@ -38,7 +54,9 @@ class DashboardOngScreen extends StatelessWidget {
           Card(
             color: panel,
             elevation: 0,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
               child: Column(
@@ -50,12 +68,15 @@ class DashboardOngScreen extends StatelessWidget {
                       Container(
                         width: 56,
                         height: 56,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF1EDE6),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFF1EDE6),
                           shape: BoxShape.circle,
                         ),
                         alignment: Alignment.center,
-                        child: const Icon(Icons.local_florist_rounded, color: Color(0xFF8E6E53)),
+                        child: const Icon(
+                          Icons.local_florist_rounded,
+                          color: Color(0xFF8E6E53),
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Column(
@@ -115,7 +136,7 @@ class DashboardOngScreen extends StatelessWidget {
 
       bottomNavigationBar: NavigationBar(
         selectedIndex: 0,
-        onDestinationSelected: (_) {},
+        onDestinationSelected: (i) => _onItemTapped(context, i),
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),

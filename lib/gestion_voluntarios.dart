@@ -9,9 +9,26 @@ class GestionVoluntariosScreen extends StatelessWidget {
   static const Color subtle = Color(0xFF7A7A7A);
   static const Color accent = Color(0xFFF39A4B);
   static const Color accentSoft = Color(0xFFFFF1E6);
-  static const Color ok = Color(0xFF2E7D32); 
-  static const Color warn = Color(0xFFE65100); 
-  static const Color error = Color(0xFFC62828); 
+  static const Color ok = Color(0xFF2E7D32);
+  static const Color warn = Color(0xFFE65100);
+  static const Color error = Color(0xFFC62828);
+
+  void _onItemTapped(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        Navigator.pushNamed(context, '/dashboard-ong');
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/gestion-actividades');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/gestion-voluntarios');
+        break;
+      case 3:
+        Navigator.pushNamed(context, '/profile');
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +136,7 @@ class GestionVoluntariosScreen extends StatelessWidget {
 
       bottomNavigationBar: NavigationBar(
         selectedIndex: 2,
-        onDestinationSelected: (_) {},
+        onDestinationSelected: (i) => _onItemTapped(context, i),
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
@@ -222,7 +239,6 @@ class _VolunteerTile extends StatelessWidget {
         children: [
           _LocalAvatar(tone: avatarTone),
           const SizedBox(width: 12),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

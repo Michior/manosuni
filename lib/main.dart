@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: currentMode,
-          initialRoute: '/notificaciones', // pantalla inicial
+          initialRoute: '/', // pantalla inicial (self)
           routes: {
             '/': (context) => const OnboardingPage(),
             '/login': (context) => const Login(),

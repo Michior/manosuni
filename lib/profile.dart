@@ -54,7 +54,10 @@ class _PerfilPageState extends State<PerfilPage> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(Icons.settings, color: theme.appBarTheme.foregroundColor),
+            icon: Icon(
+              Icons.settings,
+              color: theme.appBarTheme.foregroundColor,
+            ),
             onPressed: () {
               Navigator.pushNamed(context, '/settings');
             },
@@ -86,9 +89,10 @@ class _PerfilPageState extends State<PerfilPage> {
                 Text(
                   "Daniel Ramirez",
                   style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: theme.textTheme.bodyLarge?.color),
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: theme.textTheme.bodyLarge?.color,
+                  ),
                 ),
                 Text(
                   "Estudiante de Ingeniería",
@@ -118,16 +122,24 @@ class _PerfilPageState extends State<PerfilPage> {
               alignment: Alignment.centerLeft,
               child: Text(
                 "Logros",
-                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildAchievement("https://lh3.googleusercontent.com/aida-public/AB6AXuAOahuVRLgGIksbzd1Jr4QLzoQ_fn4wD4nscacsDAQ8LcFqjTlhLBUXhjt5gkoxCoQX66_sLOnaB-1HXnbDZTE4nSQXasJ0EnQ7KO-hqLM1D44SZR7J9XBbT8DuAUPru-Y03s30NnL3MRUnXqfKdkfr3sf2_OwRkva97kHWTUoadooSsmnXMWr1XrHltsRLK_BoJN6Al_bK7WaONf-sNmg5z3SBx-x-XSlcwwmZYtH2J6AZgXAu0D_IOaiy_L3e5CpTah7qfJjF0LE"),
-                _buildAchievement("https://lh3.googleusercontent.com/aida-public/AB6AXuDAgTne4Rgbicss1j4H8XarCge6jtQUlPtJSDOmTbMSOG9Qy4E_gvgxr87ejQKgeDdQUPdb3-yQj-CxcTKyQu0160CR9Jz6WPVevAtpBTga31G1yDC3lEp2L8_G-ROxXcf25LiIPV_n2BcxxmqeYxrV14ZNbBEFXqlTIjN9w0TKBCs-VLrJ_RIivbyaMUNganI10uCFKCJI25fVoeGBoWdID77sjJxf46tmng-zTN7Dc_exMD4mJkFizhRAmgZ_Q5C3HefYQh3dlBQ"),
-                _buildAchievement("https://lh3.googleusercontent.com/aida-public/AB6AXuCc6hqI-NYk3paYE-6HSfGRWFuFeZmuVPkwRdau1hP7_d6XYz3ka_M_jzZK2UgEClSEP74PnXaaIEhXjDptpjTeFYoGWo3SElaMDRnKKHg-fxNfKx-3IhU02qhIbg3_GkudHkphyUYvYUx_YWtxKc3xt31pB4YbfzjqG5aCgiJieUoSBgXI0DVxdRyAmUx7q5AOeyN2C5I4uIM91Yr38EUE-Ia1f7vDCEmpGLMjwLc3zq6can53Ci3UmUU9N3itDiEz0G-6hrUSnN8"),
+                _buildAchievement(
+                  "https://lh3.googleusercontent.com/aida-public/AB6AXuAOahuVRLgGIksbzd1Jr4QLzoQ_fn4wD4nscacsDAQ8LcFqjTlhLBUXhjt5gkoxCoQX66_sLOnaB-1HXnbDZTE4nSQXasJ0EnQ7KO-hqLM1D44SZR7J9XBbT8DuAUPru-Y03s30NnL3MRUnXqfKdkfr3sf2_OwRkva97kHWTUoadooSsmnXMWr1XrHltsRLK_BoJN6Al_bK7WaONf-sNmg5z3SBx-x-XSlcwwmZYtH2J6AZgXAu0D_IOaiy_L3e5CpTah7qfJjF0LE",
+                ),
+                _buildAchievement(
+                  "https://lh3.googleusercontent.com/aida-public/AB6AXuDAgTne4Rgbicss1j4H8XarCge6jtQUlPtJSDOmTbMSOG9Qy4E_gvgxr87ejQKgeDdQUPdb3-yQj-CxcTKyQu0160CR9Jz6WPVevAtpBTga31G1yDC3lEp2L8_G-ROxXcf25LiIPV_n2BcxxmqeYxrV14ZNbBEFXqlTIjN9w0TKBCs-VLrJ_RIivbyaMUNganI10uCFKCJI25fVoeGBoWdID77sjJxf46tmng-zTN7Dc_exMD4mJkFizhRAmgZ_Q5C3HefYQh3dlBQ",
+                ),
+                _buildAchievement(
+                  "https://lh3.googleusercontent.com/aida-public/AB6AXuCc6hqI-NYk3paYE-6HSfGRWFuFeZmuVPkwRdau1hP7_d6XYz3ka_M_jzZK2UgEClSEP74PnXaaIEhXjDptpjTeFYoGWo3SElaMDRnKKHg-fxNfKx-3IhU02qhIbg3_GkudHkphyUYvYUx_YWtxKc3xt31pB4YbfzjqG5aCgiJieUoSBgXI0DVxdRyAmUx7q5AOeyN2C5I4uIM91Yr38EUE-Ia1f7vDCEmpGLMjwLc3zq6can53Ci3UmUU9N3itDiEz0G-6hrUSnN8",
+                ),
               ],
             ),
             const SizedBox(height: 24),
@@ -137,16 +149,23 @@ class _PerfilPageState extends State<PerfilPage> {
               alignment: Alignment.centerLeft,
               child: Text(
                 "Portafolio",
-                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             const SizedBox(height: 12),
             GestureDetector(
               onTap: () {},
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
-                  border: Border.all(color: AppTheme.primaryColor.withOpacity(0.5)),
+                  border: Border.all(
+                    color: AppTheme.primaryColor.withOpacity(0.5),
+                  ),
                   borderRadius: BorderRadius.circular(12),
                   color: theme.scaffoldBackgroundColor,
                   boxShadow: [
@@ -163,8 +182,9 @@ class _PerfilPageState extends State<PerfilPage> {
                     Text(
                       "Descargar Portafolio",
                       style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: theme.textTheme.bodyLarge?.color),
+                        fontWeight: FontWeight.w500,
+                        color: theme.textTheme.bodyLarge?.color,
+                      ),
                     ),
                     const Icon(Icons.download, color: AppTheme.primaryColor),
                   ],
@@ -184,8 +204,14 @@ class _PerfilPageState extends State<PerfilPage> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Inicio"),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: "Explorar"),
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: "Actividades"),
-          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Dashboard"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month),
+            label: "Actividades",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart),
+            label: "Dashboard",
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Perfil"),
         ],
       ),
@@ -204,18 +230,32 @@ class _PerfilPageState extends State<PerfilPage> {
           ),
         ),
         const SizedBox(height: 4),
-        Text(label, style: TextStyle(color: theme.textTheme.bodySmall?.color, fontSize: 12)),
+        Text(
+          label,
+          style: TextStyle(
+            color: theme.textTheme.bodySmall?.color,
+            fontSize: 12,
+          ),
+        ),
       ],
     );
   }
 
   Widget _buildAchievement(String imageUrl) {
-    return Container(
-      height: 90,
-      width: 90,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        image: DecorationImage(image: NetworkImage(imageUrl), fit: BoxFit.cover),
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, '/logros');
+      },
+      child: Container(
+        height: 90,
+        width: 90,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          image: DecorationImage(
+            image: NetworkImage(imageUrl),
+            fit: BoxFit.cover,
+          ),
+        ),
       ),
     );
   }

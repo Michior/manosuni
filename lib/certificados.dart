@@ -7,6 +7,23 @@ class CertificadosScreen extends StatelessWidget {
   static const Color accentSoft = Color(0xFFFFF1E6);
   static const Color bg = Color(0xFFF6F5F2);
 
+  void _onItemTapped(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        Navigator.pushNamed(context, '/dashboard'); 
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/explorer'); 
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/activities'); 
+        break;
+      case 3:
+        Navigator.pushNamed(context, '/profile'); 
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
@@ -63,7 +80,8 @@ class CertificadosScreen extends StatelessWidget {
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: 3,
-        destinations: [
+        onDestinationSelected: (i) => _onItemTapped(context, i),
+        destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home_rounded),

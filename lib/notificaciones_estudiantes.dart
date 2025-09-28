@@ -10,13 +10,33 @@ class NotificationsStudentScreen extends StatefulWidget {
 
 class _NotificationsStudentScreenState
     extends State<NotificationsStudentScreen> {
-  int _navIndex = 0;
+
+  int _navIndex = 3; 
 
   
   static const Color accent = Color(0xFFF39A4B); 
   static const Color accentSoft = Color(0xFFFFF1E6); 
-  static const Color cardBg = Colors.white;
+  static const Color cardBg = Colors.white; 
   static const Color bg = Color(0xFFF6F5F2); 
+
+  void _onItemTapped(int index) {
+    setState(() => _navIndex = index);
+    switch (index) {
+      case 0:
+        Navigator.pushNamed(context, '/dashboard'); 
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/explorer'); 
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/activities'); 
+        break;
+      case 3:
+        Navigator.pushNamed(context, '/profile'); 
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
@@ -99,10 +119,7 @@ class _NotificationsStudentScreenState
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _navIndex,
-        onDestinationSelected: (i) {
-          setState(() => _navIndex = i);
-          // conexion
-        },
+        onDestinationSelected: _onItemTapped,
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
@@ -134,7 +151,7 @@ class _NotificationTile extends StatelessWidget {
   final IconData icon;
   final Color iconBg;
   final Color iconColor;
-  final Color cardBg; 
+  final Color cardBg;
   final String title;
   final String subtitle;
 
@@ -160,7 +177,6 @@ class _NotificationTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             Container(
               width: 44,
               height: 44,
@@ -172,7 +188,6 @@ class _NotificationTile extends StatelessWidget {
               child: Icon(icon, color: iconColor, size: 24),
             ),
             const SizedBox(width: 12),
-  
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
