@@ -1,4 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:manosuni/OnBoardingPage.dart';
+import 'package:manosuni/dashboard.dart';
+import 'package:manosuni/explorer.dart';
+import 'package:manosuni/login.dart';
+import 'package:manosuni/my_activities.dart';
+import 'package:manosuni/profile.dart';
+import 'package:manosuni/register.dart';
+import 'package:manosuni/theme/settings.dart';
+import 'package:manosuni/notificaciones_estudiantes.dart';
+import 'theme/app_theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,12 +22,28 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeNotifier,
+      builder: (_, currentMode, __) {
+        return MaterialApp(
+          title: 'ManosUni',
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: currentMode,
+          initialRoute: '/notificaciones', // pantalla inicial
+          routes: {
+            '/': (context) => const OnboardingPage(),
+            '/login': (context) => const Login(),
+            '/register': (context) => const Register(),
+            '/dashboard': (context) => const DashboardPage(),
+            '/explorer': (context) => const Explorer(),
+            '/activities': (context) => const MisActividades(),
+            '/profile': (context) => const PerfilPage(),
+            '/settings': (context) => const SettingsPage(),
+            '/notificaciones': (context) => const NotificationsStudentScreen(), // <-- agregado
+          },
+        );
+      },
     );
   }
 }
