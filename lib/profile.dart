@@ -155,41 +155,54 @@ class _PerfilPageState extends State<PerfilPage> {
               ),
             ),
             const SizedBox(height: 12),
-            GestureDetector(
-              onTap: () {},
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: AppTheme.primaryColor.withOpacity(0.5),
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                  color: theme.scaffoldBackgroundColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppTheme.primaryColor.withOpacity(0.05),
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Descargar Portafolio",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: theme.textTheme.bodyLarge?.color,
-                      ),
-                    ),
-                    const Icon(Icons.download, color: AppTheme.primaryColor),
-                  ],
+            _buildActionButton(
+              label: "Descargar Portafolio",
+              icon: Icons.download,
+              onTap: () {
+                // Acción para descargar
+              },
+            ),
+            const SizedBox(height: 16),
+
+            // Certificados
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Certificados",
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
               ),
+            ),
+
+            const SizedBox(height: 12),
+            _buildActionButton(
+              label: "Ver Certificados",
+              icon: Icons.school,
+              onTap: () {
+                Navigator.pushNamed(context, '/certificados');
+              },
+            ),
+            const SizedBox(height: 16),
+
+            // Calendario
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Calendario de actividades",
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 12),
+            _buildActionButton(
+              label: "Ver calendario",
+              icon: Icons.calendar_today,
+              onTap: () {
+                Navigator.pushNamed(context, '/calendario');
+              },
             ),
           ],
         ),
@@ -255,6 +268,45 @@ class _PerfilPageState extends State<PerfilPage> {
             image: NetworkImage(imageUrl),
             fit: BoxFit.cover,
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required String label,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          border: Border.all(color: AppTheme.primaryColor.withOpacity(0.5)),
+          borderRadius: BorderRadius.circular(12),
+          color: theme.scaffoldBackgroundColor,
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.primaryColor.withOpacity(0.05),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: theme.textTheme.bodyLarge?.color,
+              ),
+            ),
+            Icon(icon, color: AppTheme.primaryColor),
+          ],
         ),
       ),
     );

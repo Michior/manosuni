@@ -19,20 +19,22 @@ class _NotificationsStudentScreenState
   static const Color cardBg = Colors.white; 
   static const Color bg = Color(0xFFF6F5F2); 
 
-  void _onItemTapped(int index) {
-    setState(() => _navIndex = index);
+   void _onItemTapped(BuildContext context, int index) {
     switch (index) {
       case 0:
-        Navigator.pushNamed(context, '/dashboard'); 
+        Navigator.pushNamed(context, '/'); // Inicio
         break;
       case 1:
-        Navigator.pushNamed(context, '/explorer'); 
+        Navigator.pushNamed(context, '/explorer'); // Explorar
         break;
       case 2:
-        Navigator.pushNamed(context, '/activities'); 
+        Navigator.pushNamed(context, '/activities'); // Actividades
         break;
       case 3:
-        Navigator.pushNamed(context, '/profile'); 
+        Navigator.pushNamed(context, '/dashboard'); // Dashboard
+        break;
+      case 4:
+        Navigator.pushNamed(context, '/profile'); // Perfil
         break;
     }
   }
@@ -117,31 +119,20 @@ class _NotificationsStudentScreenState
           ),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _navIndex,
-        onDestinationSelected: _onItemTapped,
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_rounded),
-            label: 'Inicio',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.search_rounded),
-            selectedIcon: Icon(Icons.search_rounded),
-            label: 'Explorar',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.event_note_outlined),
-            selectedIcon: Icon(Icons.event_note_rounded),
-            label: 'Actividades',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline_rounded),
-            selectedIcon: Icon(Icons.person_rounded),
-            label: 'Perfil',
-          ),
+      // --- Bottom Navigation Bar ---
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: 3, // Mis Actividades
+        //selectedItemColor: theme.colorScheme.primary,
+        unselectedItemColor: Colors.grey,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Inicio"),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Explorar"),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: "Actividades"),
+          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Dashboard"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Perfil"),
         ],
+        onTap: (index) => _onItemTapped(context, index),
       ),
     );
   }

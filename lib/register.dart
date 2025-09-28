@@ -98,7 +98,7 @@ class Register extends StatelessWidget {
                       width: double.infinity,
                       height: 52,
                       child: ElevatedButton(
-                        onPressed: () => Navigator.pushNamed(context, '/dashboard'),
+                        onPressed: () => Navigator.pushNamed(context, '/explorer'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: theme.primaryColor,
                           shape: RoundedRectangleBorder(
