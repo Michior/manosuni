@@ -7,6 +7,14 @@ import 'package:manosuni/my_activities.dart';
 import 'package:manosuni/profile.dart';
 import 'package:manosuni/register.dart';
 import 'package:manosuni/theme/settings.dart';
+import 'package:manosuni/notificaciones_estudiantes.dart';
+import 'package:manosuni/calendario_personal.dart';
+import 'package:manosuni/logros.dart';
+import 'package:manosuni/certificados.dart';
+import 'package:manosuni/dashboard_ong.dart';
+import 'package:manosuni/publicar_actividad.dart';
+import 'package:manosuni/gestion_actividades.dart';
+import 'package:manosuni/gestion_voluntarios.dart';
 import 'theme/app_theme.dart';
 
 void main() {
@@ -29,7 +37,7 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: currentMode,
-          initialRoute: '/',
+          initialRoute: '/', // pantalla inicial (self)
           routes: {
             '/': (context) => const OnboardingPage(),
             '/login': (context) => const Login(),
@@ -39,6 +47,14 @@ class MyApp extends StatelessWidget {
             '/activities': (context) => const MisActividades(),
             '/profile': (context) => const PerfilPage(),
             '/settings': (context) => const SettingsPage(),
+            '/notificaciones': (context) => const NotificationsStudentScreen(), 
+            '/calendario': (context) => const CalendarPersonalScreen(),
+            '/logros': (context) => const LogrosScreen(),
+            '/certificados': (context) => const CertificadosScreen(),
+            '/dashboard-ong': (context) => const DashboardOngScreen(),
+            '/publicar-actividad': (context) => const PublicarActividadScreen(),
+            '/gestion-actividades': (context) => const GestionActividadesScreen(),
+            '/gestion-voluntarios': (context) => const GestionVoluntariosScreen(),
           },
         );
       },
