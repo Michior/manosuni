@@ -8,6 +8,7 @@ import 'package:manosuni/profile.dart';
 import 'package:manosuni/register.dart';
 import 'package:manosuni/theme/settings.dart';
 import 'package:manosuni/notificaciones_estudiantes.dart';
+import 'package:manosuni/calendario_personal.dart';
 import 'theme/app_theme.dart';
 
 void main() {
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: currentMode,
-          initialRoute: '/notificaciones', // pantalla inicial
+          initialRoute: '/calendario', // pantalla inicial
           routes: {
             '/': (context) => const OnboardingPage(),
             '/login': (context) => const Login(),
@@ -40,7 +41,8 @@ class MyApp extends StatelessWidget {
             '/activities': (context) => const MisActividades(),
             '/profile': (context) => const PerfilPage(),
             '/settings': (context) => const SettingsPage(),
-            '/notificaciones': (context) => const NotificationsStudentScreen(), // <-- agregado
+            '/notificaciones': (context) => const NotificationsStudentScreen(), 
+            '/calendario': (context) => const CalendarPersonalScreen(),
           },
         );
       },
