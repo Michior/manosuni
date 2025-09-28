@@ -152,8 +152,6 @@ class _CalendarPersonalScreenState extends State<CalendarPersonalScreen> {
   }
 }
 
-// ---------- Widgets auxiliares de UI ----------
-
 class _IconPill extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onTap;
