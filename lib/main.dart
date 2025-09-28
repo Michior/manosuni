@@ -10,6 +10,8 @@ import 'package:manosuni/theme/settings.dart';
 import 'package:manosuni/notificaciones_estudiantes.dart';
 import 'package:manosuni/calendario_personal.dart';
 import 'package:manosuni/logros.dart';
+import 'package:manosuni/certificados.dart';
+import 'package:manosuni/dashboard_ong.dart';
 import 'theme/app_theme.dart';
 
 void main() {
@@ -32,7 +34,7 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: currentMode,
-          initialRoute: '/logros', // pantalla inicial
+          initialRoute: '/dashboard-ong', // pantalla inicial
           routes: {
             '/': (context) => const OnboardingPage(),
             '/login': (context) => const Login(),
@@ -45,6 +47,8 @@ class MyApp extends StatelessWidget {
             '/notificaciones': (context) => const NotificationsStudentScreen(), 
             '/calendario': (context) => const CalendarPersonalScreen(),
             '/logros': (context) => const LogrosScreen(),
+            '/certificados': (context) => const CertificadosScreen(),
+            '/dashboard-ong': (context) => const DashboardOngScreen(),
           },
         );
       },
