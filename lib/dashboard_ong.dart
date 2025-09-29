@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
+import 'theme/app_theme.dart';
 
 class DashboardOngScreen extends StatelessWidget {
   const DashboardOngScreen({super.key});
-
-  static const Color bg = Color(0xFFF6F5F2);
-  static const Color panel = Colors.white;
-  static const Color titleColor = Color(0xFF1E1E1E);
-  static const Color subtle = Color(0xFF7A7A7A);
-  static const Color accentRed = Color(0xFFE53935);
 
   void _onItemTapped(BuildContext context, int index) {
     switch (index) {
@@ -28,23 +23,24 @@ class DashboardOngScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: bg,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: bg,
+        backgroundColor: theme.appBarTheme.backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          icon: Icon(Icons.arrow_back_ios_new_rounded,
+              color: theme.appBarTheme.foregroundColor),
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         centerTitle: true,
         title: Text(
           'Dashboard',
-          style: text.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: titleColor,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: theme.appBarTheme.foregroundColor,
           ),
         ),
       ),
@@ -52,7 +48,7 @@ class DashboardOngScreen extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
         children: [
           Card(
-            color: panel,
+            color: theme.colorScheme.surface,
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
@@ -62,20 +58,21 @@ class DashboardOngScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Header ONG
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
                         width: 56,
                         height: 56,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFF1EDE6),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surface.withOpacity(0.8),
                           shape: BoxShape.circle,
                         ),
                         alignment: Alignment.center,
-                        child: const Icon(
+                        child: Icon(
                           Icons.local_florist_rounded,
-                          color: Color(0xFF8E6E53),
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -84,16 +81,16 @@ class DashboardOngScreen extends StatelessWidget {
                         children: [
                           Text(
                             'Helping Hands',
-                            style: text.titleMedium?.copyWith(
+                            style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w800,
-                              color: titleColor,
+                              color: theme.textTheme.bodyLarge?.color,
                             ),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             'NGO',
-                            style: text.bodyMedium?.copyWith(
-                              color: subtle,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.textTheme.bodySmall?.color,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -104,15 +101,16 @@ class DashboardOngScreen extends StatelessWidget {
 
                   const SizedBox(height: 20),
 
+                  // Overview title
                   Text(
                     'Overview',
-                    style: text.titleLarge?.copyWith(
+                    style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w800,
-                      color: titleColor,
                     ),
                   ),
                   const SizedBox(height: 12),
 
+                  // Stats Grid
                   GridView.count(
                     crossAxisCount: 2,
                     crossAxisSpacing: 12,
@@ -134,30 +132,19 @@ class DashboardOngScreen extends StatelessWidget {
         ],
       ),
 
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: 0,
-        onDestinationSelected: (i) => _onItemTapped(context, i),
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_rounded),
-            label: 'Dashboard',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.event_note_outlined),
-            selectedIcon: Icon(Icons.event_note_rounded),
-            label: 'Activities',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.groups_outlined),
-            selectedIcon: Icon(Icons.groups_rounded),
-            label: 'Volunteers',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline_rounded),
-            selectedIcon: Icon(Icons.person_rounded),
-            label: 'Profile',
-          ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: 0,
+        selectedItemColor: AppTheme.primaryColor,
+        unselectedItemColor: theme.bottomNavigationBarTheme.unselectedItemColor,
+        backgroundColor: theme.bottomNavigationBarTheme.backgroundColor,
+        onTap: (i) => _onItemTapped(context, i),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.event_note), label: "Activities"),
+          BottomNavigationBarItem(icon: Icon(Icons.groups), label: "Volunteers"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
         ],
       ),
     );
@@ -171,12 +158,19 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: theme.shadowColor.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       child: Column(
@@ -184,16 +178,16 @@ class _StatCard extends StatelessWidget {
         children: [
           Text(
             label,
-            style: text.bodyMedium?.copyWith(
-              color: const Color(0xFF8B8B8B),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.textTheme.bodySmall?.color,
               fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             value,
-            style: text.headlineSmall?.copyWith(
-              color: DashboardOngScreen.accentRed,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              color: AppTheme.primaryColor,
               fontWeight: FontWeight.w800,
             ),
           ),
