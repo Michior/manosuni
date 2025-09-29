@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'notificaciones_screen.dart';
 import 'ngo_settings_screen.dart';
+import 'ngo_validation_screen.dart';
+import 'impact_reports_screen.dart';
+import 'generate_qr_screen.dart';
 
 class NgoProfileScreen extends StatelessWidget {
   const NgoProfileScreen({super.key});
@@ -66,6 +69,81 @@ class NgoProfileScreen extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
+            // Botón de Validación de Horas Sociales
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const NgoValidationScreen()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFF1780F),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  "Validación de Horas Sociales",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Botón de Reportes de Impacto
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ImpactReportsScreen()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFF1780F),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  "Reportes de Impacto",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Botón de Generar QR de Actividad
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const GenerateQrScreen()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFF1780F),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  "Generar QR de Actividad",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
 
             // Proyectos Activos
             _buildSectionTitle("Proyectos Activos"),
