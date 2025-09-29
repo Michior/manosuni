@@ -13,8 +13,8 @@ class NgoProfileScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Perfil ONG"),
-        backgroundColor: Colors.white, // Quitamos el naranja
-        foregroundColor: Colors.black, // Texto/íconos en negro
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
         elevation: 0,
         actions: [
           IconButton(
@@ -42,10 +42,10 @@ class NgoProfileScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Logo circular
+            // Logo circular desde internet
             const CircleAvatar(
               radius: 50,
-              backgroundImage: AssetImage("assets/images/ngo_logo.png"), 
+              backgroundImage: NetworkImage("https://picsum.photos/seed/logo/200"),
             ),
             const SizedBox(height: 12),
 
@@ -69,6 +69,7 @@ class NgoProfileScreen extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
+
             // Botón de Validación de Horas Sociales
             SizedBox(
               width: double.infinity,
@@ -88,7 +89,7 @@ class NgoProfileScreen extends StatelessWidget {
                 ),
                 child: const Text(
                   "Validación de Horas Sociales",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white,),
                 ),
               ),
             ),
@@ -113,7 +114,7 @@ class NgoProfileScreen extends StatelessWidget {
                 ),
                 child: const Text(
                   "Reportes de Impacto",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white,),
                 ),
               ),
             ),
@@ -138,12 +139,11 @@ class NgoProfileScreen extends StatelessWidget {
                 ),
                 child: const Text(
                   "Generar QR de Actividad",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white,),
                 ),
               ),
             ),
             const SizedBox(height: 20),
-
 
             // Proyectos Activos
             _buildSectionTitle("Proyectos Activos"),
@@ -152,9 +152,9 @@ class NgoProfileScreen extends StatelessWidget {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: [
-                  _projectCard("assets/images/tree.png", "Siembra de Árboles"),
-                  _projectCard("assets/images/beach.png", "Limpieza de Playa"),
-                  _projectCard("assets/images/education.png", "Taller Educativo"),
+                  _projectCard("https://picsum.photos/seed/tree/200", "Siembra de Árboles"),
+                  _projectCard("https://picsum.photos/seed/beach/200", "Limpieza de Playa"),
+                  _projectCard("https://picsum.photos/seed/education/200", "Taller Educativo"),
                 ],
               ),
             ),
@@ -167,9 +167,9 @@ class NgoProfileScreen extends StatelessWidget {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: [
-                  _projectCard("assets/images/river.png", "Reforestación Río"),
-                  _projectCard("assets/images/school.png", "Pintura Escuela"),
-                  _projectCard("assets/images/community.png", "Apoyo Comunidad"),
+                  _projectCard("https://picsum.photos/seed/river/200", "Reforestación Río"),
+                  _projectCard("https://picsum.photos/seed/school/200", "Pintura Escuela"),
+                  _projectCard("https://picsum.photos/seed/community/200", "Apoyo Comunidad"),
                 ],
               ),
             ),
@@ -180,13 +180,17 @@ class NgoProfileScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.orange[50],
+                color: const Color(0xFFF1780F), // Fondo naranja fuerte
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: const Color(0xFFF1780F)),
               ),
               child: const Text(
                 "Total Impact Hours: +500",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white, // Texto en blanco
+                ),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -223,8 +227,8 @@ class NgoProfileScreen extends StatelessWidget {
     );
   }
 
-  // Card de proyecto
-  Widget _projectCard(String imagePath, String title) {
+  // Card de proyecto con imágenes de internet
+  Widget _projectCard(String imageUrl, String title) {
     return Container(
       width: 120,
       margin: const EdgeInsets.only(right: 12),
@@ -233,8 +237,8 @@ class NgoProfileScreen extends StatelessWidget {
           Expanded(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                imagePath,
+              child: Image.network(
+                imageUrl,
                 fit: BoxFit.cover,
                 width: double.infinity,
               ),
