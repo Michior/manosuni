@@ -73,15 +73,23 @@ class NgoValidationScreen extends StatelessWidget {
                             ElevatedButton(
                               onPressed: () {},
                               style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green),
-                              child: const Text("Aceptar"),
+                                backgroundColor: Colors.green,
+                              ),
+                              child: const Text(
+                                "Aceptar",
+                                style: TextStyle(color: Colors.white), 
+                              ),
                             ),
                             const SizedBox(width: 8),
                             ElevatedButton(
                               onPressed: () {},
                               style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red),
-                              child: const Text("Rechazar"),
+                                backgroundColor: Colors.red,
+                              ),
+                              child: const Text(
+                                "Rechazar",
+                                style: TextStyle(color: Colors.white), 
+                              ),
                             ),
                           ],
                         )
