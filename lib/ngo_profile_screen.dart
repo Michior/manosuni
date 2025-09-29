@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'notificaciones_screen.dart';
+import 'ngo_settings_screen.dart';
 
 class NgoProfileScreen extends StatelessWidget {
   const NgoProfileScreen({super.key});
@@ -8,7 +10,29 @@ class NgoProfileScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Perfil ONG"),
-        backgroundColor: const Color(0xFFF1780F),
+        backgroundColor: Colors.white, // Quitamos el naranja
+        foregroundColor: Colors.black, // Texto/íconos en negro
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const NotificacionesScreen()),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const NgoSettingsScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
