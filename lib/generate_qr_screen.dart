@@ -36,7 +36,7 @@ class GenerateQrScreen extends StatelessWidget {
                 },
                 child: const Text(
                   "Generar Código QR",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
               ),
             ),

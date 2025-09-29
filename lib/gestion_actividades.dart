@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'theme/app_theme.dart';
 
 class GestionActividadesScreen extends StatefulWidget {
   const GestionActividadesScreen({super.key});
@@ -10,11 +11,6 @@ class GestionActividadesScreen extends StatefulWidget {
 
 class _GestionActividadesScreenState extends State<GestionActividadesScreen>
     with SingleTickerProviderStateMixin {
-  static const Color bg = Color(0xFFF6F5F2);
-  static const Color panel = Colors.white;
-  static const Color accent = Color(0xFFF39A4B);
-  static const Color accentSoft = Color(0xFFFFF1E6);
-
   late final TabController _tabs;
 
   @override
@@ -48,23 +44,24 @@ class _GestionActividadesScreenState extends State<GestionActividadesScreen>
 
   @override
   Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: bg,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: bg,
+        backgroundColor: theme.appBarTheme.backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          icon: Icon(Icons.arrow_back_ios_new_rounded,
+              color: theme.appBarTheme.foregroundColor),
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         centerTitle: true,
         title: Text(
           'Actividades',
-          style: text.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: const Color(0xFF1E1E1E),
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: theme.appBarTheme.foregroundColor,
           ),
         ),
         bottom: PreferredSize(
@@ -73,18 +70,18 @@ class _GestionActividadesScreenState extends State<GestionActividadesScreen>
             height: 48,
             margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             decoration: BoxDecoration(
-              color: panel,
+              color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
             ),
             alignment: Alignment.centerLeft,
             child: TabBar(
               controller: _tabs,
-              indicatorColor: accent,
-              labelColor: accent,
-              unselectedLabelColor: const Color(0xFF7A7A7A),
-              labelStyle: const TextStyle(fontWeight: FontWeight.w800),
+              indicatorColor: AppTheme.primaryColor,
+              labelColor: AppTheme.primaryColor,
+              unselectedLabelColor: theme.textTheme.bodySmall?.color,
+              labelStyle: const TextStyle(fontWeight: FontWeight.bold),
               unselectedLabelStyle: const TextStyle(
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
               ),
               indicatorSize: TabBarIndicatorSize.label,
               tabs: const [
@@ -141,33 +138,23 @@ class _GestionActividadesScreenState extends State<GestionActividadesScreen>
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.pushNamed(context, '/publicar-actividad'),
         tooltip: 'Añadir actividad',
-        child: const Icon(Icons.add_rounded),
+        backgroundColor: AppTheme.primaryColor,
+        child: const Icon(Icons.add_rounded, color: Colors.white),
       ),
 
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: 1,
-        onDestinationSelected: _onItemTapped,
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_rounded),
-            label: 'Dashboard',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.event_note_outlined),
-            selectedIcon: Icon(Icons.event_note_rounded),
-            label: 'Actividades',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.groups_outlined),
-            selectedIcon: Icon(Icons.groups_rounded),
-            label: 'Voluntarios',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline_rounded),
-            selectedIcon: Icon(Icons.person_rounded),
-            label: 'Perfil',
-          ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: 1,
+        selectedItemColor: AppTheme.primaryColor,
+        unselectedItemColor: theme.bottomNavigationBarTheme.unselectedItemColor,
+        backgroundColor: theme.bottomNavigationBarTheme.backgroundColor,
+        onTap: _onItemTapped,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.event_note), label: "Actividades"),
+          BottomNavigationBarItem(icon: Icon(Icons.groups), label: "Voluntarios"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Perfil"),
         ],
       ),
     );
@@ -187,11 +174,11 @@ class _ActivityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
 
     return Card(
       elevation: 0,
-      color: Colors.white,
+      color: theme.colorScheme.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(12, 12, 12, 14),
@@ -209,16 +196,15 @@ class _ActivityCard extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: text.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFF2A2A2A),
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         dateText,
-                        style: text.bodyMedium?.copyWith(
-                          color: const Color(0xFF7A7A7A),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.textTheme.bodySmall?.color,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -233,7 +219,7 @@ class _ActivityCard extends StatelessWidget {
               children: [
                 _SecondaryButton(
                   label: 'Editar',
-                  onPressed: () {}, // mock
+                  onPressed: () {},
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -257,6 +243,8 @@ class _Thumb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: SizedBox(
@@ -264,18 +252,16 @@ class _Thumb extends StatelessWidget {
         height: 60,
         child: imageUrl == null
             ? Container(
-                color: const Color(0xFFEDEDED),
-                child: const Icon(Icons.image, color: Color(0xFF9AA0A6)),
+                color: theme.colorScheme.surface,
+                child: Icon(Icons.image, color: theme.textTheme.bodySmall?.color),
               )
             : Image.network(
                 imageUrl!,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
-                  color: const Color(0xFFEDEDED),
-                  child: const Icon(
-                    Icons.broken_image_rounded,
-                    color: Color(0xFF9AA0A6),
-                  ),
+                  color: theme.colorScheme.surface,
+                  child: Icon(Icons.broken_image_rounded,
+                      color: theme.textTheme.bodySmall?.color),
                 ),
               ),
       ),
@@ -290,14 +276,15 @@ class _SecondaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return FilledButton.tonal(
       onPressed: onPressed,
       style: FilledButton.styleFrom(
-        backgroundColor: _GestionActividadesScreenState.accentSoft,
-        foregroundColor: const Color(0xFF7A7A7A),
+        backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+        foregroundColor: theme.textTheme.bodySmall?.color,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        textStyle: const TextStyle(fontWeight: FontWeight.w800),
+        textStyle: const TextStyle(fontWeight: FontWeight.bold),
       ),
       child: Text(label),
     );
@@ -314,11 +301,11 @@ class _PrimaryButton extends StatelessWidget {
     return FilledButton(
       onPressed: onPressed,
       style: FilledButton.styleFrom(
-        backgroundColor: _GestionActividadesScreenState.accent,
+        backgroundColor: AppTheme.primaryColor,
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        textStyle: const TextStyle(fontWeight: FontWeight.w800),
+        textStyle: const TextStyle(fontWeight: FontWeight.bold),
       ),
       child: Text(label),
     );
@@ -332,22 +319,23 @@ class _EmptyHint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 36),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       alignment: Alignment.center,
       child: Column(
         children: [
-          Icon(icon, size: 36, color: const Color(0xFF9AA0A6)),
+          Icon(icon, size: 36, color: theme.textTheme.bodySmall?.color),
           const SizedBox(height: 10),
           Text(
             text,
-            style: const TextStyle(
-              color: Color(0xFF7A7A7A),
+            style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w600,
+              color: theme.textTheme.bodySmall?.color,
             ),
           ),
         ],
