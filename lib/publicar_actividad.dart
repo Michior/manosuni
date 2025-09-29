@@ -19,7 +19,7 @@ class PublicarActividadScreen extends StatelessWidget {
         Navigator.pushNamed(context, '/gestion-actividades');
         break;
       case 3:
-        Navigator.pushNamed(context, '/profile');
+        Navigator.pushNamed(context, '/profile-ong');
         break;
     }
   }
@@ -230,7 +230,7 @@ class PublicarActividadScreen extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: FilledButton(
-              onPressed: () {},
+              onPressed: () => Navigator.pushNamed(context, '/gestion-actividades'),
               style: FilledButton.styleFrom(
                 backgroundColor: accent,
                 foregroundColor: Colors.white,

@@ -41,7 +41,7 @@ class _GestionActividadesScreenState extends State<GestionActividadesScreen>
         Navigator.pushNamed(context, '/gestion-voluntarios');
         break;
       case 3:
-        Navigator.pushNamed(context, '/profile');
+        Navigator.pushNamed(context, '/profile-ong');
         break;
     }
   }

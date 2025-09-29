@@ -21,7 +21,7 @@ class DashboardOngScreen extends StatelessWidget {
         Navigator.pushNamed(context, '/gestion-voluntarios');
         break;
       case 3:
-        Navigator.pushNamed(context, '/profile');
+        Navigator.pushNamed(context, '/profile-ong');
         break;
     }
   }

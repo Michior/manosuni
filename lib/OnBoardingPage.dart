@@ -119,6 +119,22 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         ),
                       ),
                       const SizedBox(height: 16),
+
+                      // --- Botón Login ---
+                      OutlinedButton(
+                        onPressed: () => Navigator.pushNamed(context, '/gestion-actividades'),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 48),
+                          side: BorderSide(color: const Color(0xFFF2780D).withOpacity(0.5)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          "Iniciar sesión como ONG",
+                          style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFF2780D)),
+                        ),
+                      ),
                     ],
                   ),
                 ),
