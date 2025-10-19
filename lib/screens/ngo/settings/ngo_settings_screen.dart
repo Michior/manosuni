@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'ngo_history_screen.dart';
-import 'ngo_help_screen.dart';
+import '../history/ngo_history_screen.dart';
+import '../../ngo/help/ngo_help_screen.dart';
 
 class NgoSettingsScreen extends StatelessWidget {
   const NgoSettingsScreen({super.key});

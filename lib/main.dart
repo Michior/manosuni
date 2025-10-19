@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:manosuni/theme/app_theme.dart';
-import 'package:manosuni/app_router.dart'; 
+import 'package:manosuni/core/theme/app_theme.dart';
+import 'package:manosuni/app/app_router.dart'; 
 
 void main() {
   runApp(const MyApp());

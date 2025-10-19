@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'widgets/opportunity_card.dart';
-import 'theme/app_theme.dart'; // Asegúrate de importar tu AppTheme
+import '../../../core/widgets/opportunity_card.dart';
+import '../../../core/theme/app_theme.dart'; // Asegúrate de importar tu AppTheme
 
 class Explorer extends StatefulWidget {
   const Explorer({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'theme/app_theme.dart'; // Importa tu archivo de AppTheme
+import '../../core/theme/app_theme.dart'; // Importa tu archivo de AppTheme
 
 class Register extends StatelessWidget {
   const Register({super.key});

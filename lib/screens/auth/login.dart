@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'theme/app_theme.dart'; // Asegúrate de tener este archivo
+import '../../core/theme/app_theme.dart'; // Asegúrate de tener este archivo
 
 class Login extends StatelessWidget {
   const Login({super.key});

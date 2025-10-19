@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'notificaciones_screen.dart';
-import 'ngo_settings_screen.dart';
-import 'ngo_validation_screen.dart';
-import 'impact_reports_screen.dart';
-import 'generate_qr_screen.dart';
+import '../notifications/notificaciones_screen.dart';
+import '../settings/ngo_settings_screen.dart';
+import '../validations/ngo_validation_screen.dart';
+import '../reports/impact_reports_screen.dart';
+import '../qr/generate_qr_screen.dart';
 
 class NgoProfileScreen extends StatelessWidget {
   const NgoProfileScreen({super.key});
