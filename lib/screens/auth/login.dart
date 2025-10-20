@@ -1,9 +1,51 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import '../../core/theme/app_theme.dart'; // Asegúrate de tener este archivo
+import '../../core/theme/app_theme.dart';
+import '../../services/auth_service.dart';
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
   const Login({super.key});
+
+  @override
+  State<Login> createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  final emailCtrl = TextEditingController();
+  final passCtrl = TextEditingController();
+  final authService = AuthService();
+
+  bool loading = false;
+
+  Future<void> _login() async {
+    if (emailCtrl.text.isEmpty || passCtrl.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor ingresa email y contraseña')),
+      );
+      return;
+    }
+
+    setState(() => loading = true);
+    try {
+      final result = await authService.login(
+        emailCtrl.text.trim(),
+        passCtrl.text.trim(),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result['message'] ?? 'Login exitoso')),
+      );
+
+      // 🔄 Redirigir a la pantalla principal
+      Navigator.pushReplacementNamed(context, '/explorer');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    } finally {
+      setState(() => loading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +70,6 @@ class Login extends StatelessWidget {
                 child: Column(
                   children: [
                     const SizedBox(height: 40),
-                    // Title
                     Text(
                       "ManosUni",
                       style: theme.textTheme.headlineMedium?.copyWith(
@@ -49,6 +90,7 @@ class Login extends StatelessWidget {
 
                     // --- Email ---
                     TextField(
+                      controller: emailCtrl,
                       decoration: InputDecoration(
                         hintText: "Email",
                         prefixIcon: Icon(Icons.email_outlined, color: theme.primaryColor),
@@ -64,6 +106,7 @@ class Login extends StatelessWidget {
 
                     // --- Password ---
                     TextField(
+                      controller: passCtrl,
                       decoration: InputDecoration(
                         hintText: "Password",
                         prefixIcon: Icon(Icons.lock_outline, color: theme.primaryColor),
@@ -81,7 +124,7 @@ class Login extends StatelessWidget {
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
-                        onPressed: () {},
+                        onPressed: () {}, // Aquí puedes poner lógica de recuperación
                         child: Text(
                           "Forgot Password?",
                           style: TextStyle(
@@ -91,12 +134,14 @@ class Login extends StatelessWidget {
                       ),
                     ),
 
+                    const SizedBox(height: 16),
+
                     // --- Login button ---
                     SizedBox(
                       width: double.infinity,
                       height: 52,
                       child: ElevatedButton(
-                        onPressed: () => Navigator.pushNamed(context, '/explorer'),
+                        onPressed: loading ? null : _login,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: theme.colorScheme.primary,
                           shape: RoundedRectangleBorder(
@@ -104,10 +149,12 @@ class Login extends StatelessWidget {
                           ),
                           elevation: 4,
                         ),
-                        child: Text(
-                          "Iniciar Sesión",
-                          style: TextStyle(fontSize: 16, color: theme.colorScheme.onSurface),
-                        ),
+                        child: loading
+                            ? const CircularProgressIndicator(color: Colors.white)
+                            : Text(
+                                "Iniciar Sesión",
+                                style: TextStyle(fontSize: 16, color: theme.colorScheme.onSurface),
+                              ),
                       ),
                     ),
                     const SizedBox(height: 24),

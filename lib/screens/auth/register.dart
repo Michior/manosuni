@@ -1,13 +1,59 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import '../../core/theme/app_theme.dart'; // Importa tu archivo de AppTheme
+import '../../core/theme/app_theme.dart';
+import '../../services/auth_service.dart';
 
-class Register extends StatelessWidget {
+class Register extends StatefulWidget {
   const Register({super.key});
 
   @override
+  State<Register> createState() => _RegisterState();
+}
+
+class _RegisterState extends State<Register> {
+  final nameCtrl = TextEditingController();
+  final emailCtrl = TextEditingController();
+  final passCtrl = TextEditingController();
+  final confirmCtrl = TextEditingController();
+  final authService = AuthService();
+
+  bool loading = false;
+  String role = 'estudiante';
+
+  Future<void> _register() async {
+    if (passCtrl.text != confirmCtrl.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Las contraseñas no coinciden')),
+      );
+      return;
+    }
+
+    setState(() => loading = true);
+    try {
+      final result = await authService.register(
+        emailCtrl.text.trim(),
+        passCtrl.text.trim(),
+        role,
+        nameCtrl.text.trim(),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result['message'] ?? 'Usuario creado correctamente')),
+      );
+
+      Navigator.pushReplacementNamed(context, '/login');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    } finally {
+      setState(() => loading = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context); // Definimos el theme
+    final theme = Theme.of(context);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -22,14 +68,12 @@ class Register extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // --- Main content ---
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 150),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 50),
                 child: Column(
                   children: [
                     const SizedBox(height: 40),
-                    // Title
                     Text(
                       "ManosUni",
                       style: theme.textTheme.headlineMedium?.copyWith(
@@ -48,8 +92,9 @@ class Register extends StatelessWidget {
                     ),
                     const SizedBox(height: 40),
 
-                    // --- Name ---
+                    // Nombre
                     TextField(
+                      controller: nameCtrl,
                       decoration: InputDecoration(
                         hintText: "Nombre",
                         prefixIcon: Icon(Icons.person, color: theme.primaryColor),
@@ -59,12 +104,12 @@ class Register extends StatelessWidget {
                         filled: true,
                         fillColor: theme.scaffoldBackgroundColor.withOpacity(0.05),
                       ),
-                      keyboardType: TextInputType.text,
                     ),
                     const SizedBox(height: 16),
 
-                    // --- Email ---
+                    // Email
                     TextField(
+                      controller: emailCtrl,
                       decoration: InputDecoration(
                         hintText: "Email",
                         prefixIcon: Icon(Icons.email_outlined, color: theme.primaryColor),
@@ -78,8 +123,9 @@ class Register extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
 
-                    // --- Password ---
+                    // Password
                     TextField(
+                      controller: passCtrl,
                       decoration: InputDecoration(
                         hintText: "Password",
                         prefixIcon: Icon(Icons.lock_outline, color: theme.primaryColor),
@@ -91,14 +137,41 @@ class Register extends StatelessWidget {
                       ),
                       obscureText: true,
                     ),
+                    const SizedBox(height: 16),
+
+                    // Confirmar Password
+                    TextField(
+                      controller: confirmCtrl,
+                      decoration: InputDecoration(
+                        hintText: "Confirmar Password",
+                        prefixIcon: Icon(Icons.lock_outline, color: theme.primaryColor),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: theme.scaffoldBackgroundColor.withOpacity(0.05),
+                      ),
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Selector de rol
+                    DropdownButton<String>(
+                      value: role,
+                      items: const [
+                        DropdownMenuItem(value: 'estudiante', child: Text('Estudiante')),
+                        DropdownMenuItem(value: 'ong', child: Text('ONG')),
+                      ],
+                      onChanged: (value) => setState(() => role = value!),
+                    ),
                     const SizedBox(height: 24),
 
-                    // --- Register button ---
+                    // Botón de registro
                     SizedBox(
                       width: double.infinity,
                       height: 52,
                       child: ElevatedButton(
-                        onPressed: () => Navigator.pushNamed(context, '/explorer'),
+                        onPressed: loading ? null : _register,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: theme.primaryColor,
                           shape: RoundedRectangleBorder(
@@ -106,13 +179,15 @@ class Register extends StatelessWidget {
                           ),
                           elevation: 4,
                         ),
-                        child: Text(
-                          "Registrarme",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: theme.appBarTheme.foregroundColor, // cambia con tema oscuro
-                          ),
-                        ),
+                        child: loading
+                            ? const CircularProgressIndicator(color: Colors.white)
+                            : Text(
+                                "Registrarme",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: theme.appBarTheme.foregroundColor,
+                                ),
+                              ),
                       ),
                     ),
                   ],
@@ -120,7 +195,6 @@ class Register extends StatelessWidget {
               ),
             ),
 
-            // --- Footer ---
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text.rich(
