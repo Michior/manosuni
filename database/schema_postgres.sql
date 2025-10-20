@@ -1,12 +1,8 @@
--- Base de datos ManosUni
--- Esquema PostgreSQL
-
 CREATE SCHEMA IF NOT EXISTS manosuni;
 SET search_path TO manosuni, public;
 
 CREATE EXTENSION IF NOT EXISTS citext;
 
--- tipos para estandarizar valores
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname='activity_modality') THEN
@@ -27,131 +23,149 @@ BEGIN
 END$$;
 
 
--- tabla de estudiantes
+-- USERS (para login/registro del front)
+
+CREATE TABLE IF NOT EXISTS users (
+  id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name        VARCHAR(100) NOT NULL,
+  email       CITEXT NOT NULL UNIQUE,
+  password    VARCHAR(255) NOT NULL,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE OR REPLACE FUNCTION trg_set_updated_at()
+RETURNS trigger AS $$
+BEGIN
+  NEW.updated_at := CURRENT_TIMESTAMP;
+  RETURN NEW;
+END$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS users_set_updated_at ON users;
+CREATE TRIGGER users_set_updated_at
+BEFORE UPDATE ON users
+FOR EACH ROW EXECUTE FUNCTION trg_set_updated_at();
+
+CREATE INDEX IF NOT EXISTS idx_users_name ON users(name);
+
+-- Core del proyecto (estudiantes/ONGs/actividades)
+
 CREATE TABLE IF NOT EXISTS students (
-  student_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  full_name TEXT NOT NULL,
-  email CITEXT UNIQUE,
-  phone TEXT,
-  university TEXT,
-  major TEXT,
-  semester INT,
-  birthdate DATE,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  student_id     BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  full_name      TEXT NOT NULL,
+  email          CITEXT UNIQUE,
+  phone          TEXT,
+  university     TEXT,
+  major          TEXT,
+  semester       INT,
+  birthdate      DATE,
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- tabla de ONGs
 CREATE TABLE IF NOT EXISTS ngos (
-  ngo_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  name TEXT NOT NULL,
-  reg_number TEXT,
-  description TEXT,
-  website TEXT,
-  contact_email CITEXT,
-  phone TEXT,
-  address TEXT,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  ngo_id         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name           TEXT NOT NULL,
+  reg_number     TEXT,
+  description    TEXT,
+  website        TEXT,
+  contact_email  CITEXT,
+  phone          TEXT,
+  address        TEXT,
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- administradores de ONG
 CREATE TABLE IF NOT EXISTS ngo_admins (
-  admin_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  ngo_id BIGINT NOT NULL REFERENCES ngos(ngo_id) ON DELETE CASCADE,
-  full_name TEXT NOT NULL,
-  email CITEXT NOT NULL,
-  role TEXT,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  admin_id       BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  ngo_id         BIGINT NOT NULL REFERENCES ngos(ngo_id) ON DELETE CASCADE,
+  full_name      TEXT NOT NULL,
+  email          CITEXT NOT NULL,
+  role           TEXT,
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE (ngo_id, email)
 );
 
--- ubicaciones
 CREATE TABLE IF NOT EXISTS locations (
-  location_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  country TEXT,
-  state TEXT,
-  city TEXT,
-  address_line TEXT,
-  latitude DOUBLE PRECISION,
-  longitude DOUBLE PRECISION
+  location_id    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  country        TEXT,
+  state          TEXT,
+  city           TEXT,
+  address_line   TEXT,
+  latitude       DOUBLE PRECISION,
+  longitude      DOUBLE PRECISION
 );
 
--- actividades creadas por ONGs
 CREATE TABLE IF NOT EXISTS activities (
-  activity_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  ngo_id BIGINT NOT NULL REFERENCES ngos(ngo_id) ON DELETE CASCADE,
-  title TEXT NOT NULL,
-  description TEXT,
-  category TEXT,
-  modality activity_modality NOT NULL DEFAULT 'onsite',
+  activity_id    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  ngo_id         BIGINT NOT NULL REFERENCES ngos(ngo_id) ON DELETE CASCADE,
+  title          TEXT NOT NULL,
+  description    TEXT,
+  category       TEXT,
+  modality       activity_modality NOT NULL DEFAULT 'onsite',
   start_datetime TIMESTAMPTZ NOT NULL,
-  end_datetime TIMESTAMPTZ,
-  hours_value NUMERIC(6,2) DEFAULT 0,
-  capacity INT,
-  location_id BIGINT REFERENCES locations(location_id) ON DELETE SET NULL,
-  status activity_status NOT NULL DEFAULT 'open',
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  end_datetime   TIMESTAMPTZ,
+  hours_value    NUMERIC(6,2) DEFAULT 0,
+  capacity       INT,
+  location_id    BIGINT REFERENCES locations(location_id) ON DELETE SET NULL,
+  status         activity_status NOT NULL DEFAULT 'open',
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- inscripciones de estudiantes
 CREATE TABLE IF NOT EXISTS enrollments (
-  enrollment_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  activity_id BIGINT NOT NULL REFERENCES activities(activity_id) ON DELETE CASCADE,
-  student_id BIGINT NOT NULL REFERENCES students(student_id) ON DELETE CASCADE,
-  status enrollment_status NOT NULL DEFAULT 'enrolled',
-  enrolled_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  enrollment_id  BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  activity_id    BIGINT NOT NULL REFERENCES activities(activity_id) ON DELETE CASCADE,
+  student_id     BIGINT NOT NULL REFERENCES students(student_id) ON DELETE CASCADE,
+  status         enrollment_status NOT NULL DEFAULT 'enrolled',
+  enrolled_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE (activity_id, student_id)
 );
 
--- ventanas QR (check-in / check-out)
 CREATE TABLE IF NOT EXISTS qr_windows (
-  qr_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  activity_id BIGINT NOT NULL REFERENCES activities(activity_id) ON DELETE CASCADE,
-  token TEXT NOT NULL UNIQUE,
-  opened_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  closes_at TIMESTAMPTZ,
-  kind qr_kind NOT NULL DEFAULT 'checkin'
+  qr_id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  activity_id    BIGINT NOT NULL REFERENCES activities(activity_id) ON DELETE CASCADE,
+  token          TEXT NOT NULL UNIQUE,
+  opened_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  closes_at      TIMESTAMPTZ,
+  kind           qr_kind NOT NULL DEFAULT 'checkin'
 );
 
--- registros de asistencia
 CREATE TABLE IF NOT EXISTS attendance_logs (
-  attendance_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  enrollment_id BIGINT NOT NULL REFERENCES enrollments(enrollment_id) ON DELETE CASCADE,
-  qr_id BIGINT NOT NULL REFERENCES qr_windows(qr_id) ON DELETE CASCADE,
-  scanned_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  attendance_id  BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  enrollment_id  BIGINT NOT NULL REFERENCES enrollments(enrollment_id) ON DELETE CASCADE,
+  qr_id          BIGINT NOT NULL REFERENCES qr_windows(qr_id) ON DELETE CASCADE,
+  scanned_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE (enrollment_id, qr_id)
 );
 
--- registro de horas sociales
 CREATE TABLE IF NOT EXISTS hours_ledger (
-  hours_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  enrollment_id BIGINT NOT NULL REFERENCES enrollments(enrollment_id) ON DELETE CASCADE,
+  hours_id       BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  enrollment_id  BIGINT NOT NULL REFERENCES enrollments(enrollment_id) ON DELETE CASCADE,
   computed_hours NUMERIC(6,2) NOT NULL DEFAULT 0,
-  status hours_status NOT NULL DEFAULT 'pending',
-  reviewer_id BIGINT REFERENCES ngo_admins(admin_id) ON DELETE SET NULL,
-  reviewed_at TIMESTAMPTZ,
-  notes TEXT,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  status         hours_status NOT NULL DEFAULT 'pending',
+  reviewer_id    BIGINT REFERENCES ngo_admins(admin_id) ON DELETE SET NULL,
+  reviewed_at    TIMESTAMPTZ,
+  notes          TEXT,
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- logros de estudiantes
 CREATE TABLE IF NOT EXISTS achievements (
   achievement_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  student_id BIGINT NOT NULL REFERENCES students(student_id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
-  earned_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  student_id     BIGINT NOT NULL REFERENCES students(student_id) ON DELETE CASCADE,
+  name           TEXT NOT NULL,
+  earned_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- certificados de participación
 CREATE TABLE IF NOT EXISTS certificates (
   certificate_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  student_id BIGINT NOT NULL REFERENCES students(student_id) ON DELETE CASCADE,
-  title TEXT NOT NULL,
-  issued_by TEXT,
-  file_url TEXT,
-  issued_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  student_id     BIGINT NOT NULL REFERENCES students(student_id) ON DELETE CASCADE,
+  title          TEXT NOT NULL,
+  issued_by      TEXT,
+  file_url       TEXT,
+  issued_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- índices
+
+-- Índices
+
 CREATE INDEX IF NOT EXISTS idx_students_email ON students(email);
 CREATE INDEX IF NOT EXISTS idx_ngos_name ON ngos(name);
 CREATE INDEX IF NOT EXISTS idx_activities_status ON activities(status);
@@ -159,7 +173,9 @@ CREATE INDEX IF NOT EXISTS idx_enrollments_student ON enrollments(student_id);
 CREATE INDEX IF NOT EXISTS idx_enrollments_activity ON enrollments(activity_id);
 CREATE INDEX IF NOT EXISTS idx_qr_windows_activity ON qr_windows(activity_id);
 
--- vistas de apoyo
+
+-- Vistas
+
 CREATE OR REPLACE VIEW v_activity_roster AS
 SELECT a.activity_id, a.title, s.student_id, s.full_name, e.status AS enrollment_status
 FROM activities a
