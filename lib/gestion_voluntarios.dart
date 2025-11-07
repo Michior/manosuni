@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class GestionVoluntariosScreen extends StatelessWidget {
+import 'theme/app_theme.dart';
+import 'services/volunteers_service.dart';
+
+class GestionVoluntariosScreen extends ConsumerWidget {
   const GestionVoluntariosScreen({super.key});
 
   static const Color ok = Color(0xFF2E7D32);
@@ -26,8 +29,13 @@ class GestionVoluntariosScreen extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+
+    final activityId =
+        (ModalRoute.of(context)?.settings.arguments as int?) ?? 1;
+
+    final async = ref.watch(volunteersProvider(activityId));
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -35,8 +43,10 @@ class GestionVoluntariosScreen extends StatelessWidget {
         backgroundColor: theme.appBarTheme.backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded,
-              color: theme.appBarTheme.foregroundColor),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: theme.appBarTheme.foregroundColor,
+          ),
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         centerTitle: true,
@@ -48,86 +58,127 @@ class GestionVoluntariosScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: theme.scaffoldBackgroundColor,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.primaryColor.withOpacity(0.05),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Actividad: Apoyo en Comedor Comunitario',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '12/07/2024',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.textTheme.bodySmall?.color,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Voluntarios Inscritos',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      '15',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.primaryColor,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-
-                const _VolunteerTile(
-                  name: 'Sofía Ramirez',
-                  statusText: 'Pendiente',
-                  statusColor: warn,
-                  trailingType: _VolunteerTrailing.validate,
-                  avatarTone: _AvatarTone.orange,
-                ),
-                const SizedBox(height: 10),
-                const _VolunteerTile(
-                  name: 'Carlos Mendoza',
-                  statusText: 'Asistió',
-                  statusColor: ok,
-                  trailingType: _VolunteerTrailing.validated,
-                  avatarTone: _AvatarTone.green,
-                ),
-                const SizedBox(height: 10),
-                const _VolunteerTile(
-                  name: 'Ana López',
-                  statusText: 'No asistió',
-                  statusColor: error,
-                  trailingType: _VolunteerTrailing.validate,
-                  avatarTone: _AvatarTone.pink,
-                ),
-              ],
-            ),
+      body: async.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.wifi_off_rounded,
+                size: 42,
+                color: theme.colorScheme.error,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'No se pudo cargar la lista',
+                style: theme.textTheme.titleMedium,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                e.toString(),
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodySmall,
+              ),
+              const SizedBox(height: 12),
+              FilledButton(
+                onPressed: () => ref.refresh(volunteersProvider(activityId)),
+                child: const Text('Reintentar'),
+              ),
+            ],
           ),
-        ],
+        ),
+        data: (vols) {
+          return RefreshIndicator(
+            onRefresh: () => ref.refresh(volunteersProvider(activityId).future),
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: theme.scaffoldBackgroundColor,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.primaryColor.withOpacity(0.05),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Actividad: (ID $activityId)',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '—',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.textTheme.bodySmall?.color,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Voluntarios Inscritos',
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            '${vols.length}',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.primaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Lista
+                      for (final v in vols) ...[
+                        _VolunteerTile(
+                          name: v.name,
+                          statusText: _statusText(v.status),
+                          statusColor: _statusColor(v.status),
+                          trailingType: v.status == 'attended'
+                              ? _VolunteerTrailing.validated
+                              : _VolunteerTrailing.validate,
+                          avatarTone: _avatarTone(v.status),
+                          onValidate: () async {
+                            await markAttendance(
+                              ref,
+                              activityId: activityId,
+                              volunteerId: v.id,
+                              status: 'attended',
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Marcado como asistió'),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
@@ -138,16 +189,56 @@ class GestionVoluntariosScreen extends StatelessWidget {
         onTap: (i) => _onItemTapped(context, i),
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
-          BottomNavigationBarItem(icon: Icon(Icons.event), label: "Actividades"),
-          BottomNavigationBarItem(icon: Icon(Icons.groups), label: "Voluntarios"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.event),
+            label: "Actividades",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.groups),
+            label: "Voluntarios",
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Perfil"),
         ],
       ),
     );
   }
+
+  static String _statusText(String s) {
+    switch (s) {
+      case 'attended':
+        return 'Asistió';
+      case 'absent':
+        return 'No asistió';
+      default:
+        return 'Pendiente';
+    }
+  }
+
+  static Color _statusColor(String s) {
+    switch (s) {
+      case 'attended':
+        return ok;
+      case 'absent':
+        return error;
+      default:
+        return warn;
+    }
+  }
+
+  static _AvatarTone _avatarTone(String s) {
+    switch (s) {
+      case 'attended':
+        return _AvatarTone.green;
+      case 'absent':
+        return _AvatarTone.pink;
+      default:
+        return _AvatarTone.orange;
+    }
+  }
 }
 
 enum _VolunteerTrailing { validate, validated }
+
 enum _AvatarTone { orange, green, pink }
 
 class _VolunteerTile extends StatelessWidget {
@@ -156,13 +247,16 @@ class _VolunteerTile extends StatelessWidget {
   final Color statusColor;
   final _VolunteerTrailing trailingType;
   final _AvatarTone avatarTone;
+  final Future<void> Function()? onValidate;
 
   const _VolunteerTile({
+    super.key,
     required this.name,
     required this.statusText,
     required this.statusColor,
     required this.trailingType,
     required this.avatarTone,
+    this.onValidate,
   });
 
   @override
@@ -175,10 +269,11 @@ class _VolunteerTile extends StatelessWidget {
         trailing = ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: AppTheme.primaryColor,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
-          onPressed: () {},
+          onPressed: onValidate,
           child: const Text(
             "Validar",
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),

@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
-import 'theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class GestionActividadesScreen extends StatefulWidget {
+import 'theme/app_theme.dart';
+import 'services/activities_service.dart';
+
+class GestionActividadesScreen extends ConsumerStatefulWidget {
   const GestionActividadesScreen({super.key});
 
   @override
-  State<GestionActividadesScreen> createState() =>
+  ConsumerState<GestionActividadesScreen> createState() =>
       _GestionActividadesScreenState();
 }
 
-class _GestionActividadesScreenState extends State<GestionActividadesScreen>
+class _GestionActividadesScreenState
+    extends ConsumerState<GestionActividadesScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabs;
 
@@ -52,8 +56,10 @@ class _GestionActividadesScreenState extends State<GestionActividadesScreen>
         backgroundColor: theme.appBarTheme.backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded,
-              color: theme.appBarTheme.foregroundColor),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: theme.appBarTheme.foregroundColor,
+          ),
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         centerTitle: true,
@@ -93,45 +99,13 @@ class _GestionActividadesScreenState extends State<GestionActividadesScreen>
           ),
         ),
       ),
+
       body: TabBarView(
         controller: _tabs,
-        children: [
-          ListView(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            children: const [
-              _ActivityCard(
-                title: 'Limpieza de playas',
-                dateText: '10 de mayo, 10:00 AM',
-                imageUrl: 'https://picsum.photos/seed/beach/200/200',
-              ),
-              SizedBox(height: 12),
-              _ActivityCard(
-                title: 'Taller de reciclaje',
-                dateText: '15 de mayo, 2:00 PM',
-                imageUrl: 'https://picsum.photos/seed/recycle/200/200',
-              ),
-            ],
-          ),
-
-          ListView(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            children: const [
-              _EmptyHint(
-                icon: Icons.pending_actions_rounded,
-                text: 'No hay actividades en curso.',
-              ),
-            ],
-          ),
-
-          ListView(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            children: const [
-              _EmptyHint(
-                icon: Icons.check_circle_outline_rounded,
-                text: 'Aún no hay actividades completadas.',
-              ),
-            ],
-          ),
+        children: const [
+          _ActivitiesTab(status: 'open'),
+          _ActivitiesTab(status: 'in_progress'),
+          _ActivitiesTab(status: 'completed'),
         ],
       ),
 
@@ -152,11 +126,108 @@ class _GestionActividadesScreenState extends State<GestionActividadesScreen>
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.event_note), label: "Actividades"),
-          BottomNavigationBarItem(icon: Icon(Icons.groups), label: "Voluntarios"),
+            icon: Icon(Icons.event_note),
+            label: "Actividades",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.groups),
+            label: "Voluntarios",
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Perfil"),
         ],
       ),
+    );
+  }
+}
+
+class _ActivitiesTab extends ConsumerWidget {
+  const _ActivitiesTab({required this.status});
+
+  final String status;
+
+  String _formatDateRange(DateTime start, DateTime end) {
+    String two(int n) => n.toString().padLeft(2, '0');
+    String hm(DateTime d) {
+      final h = d.hour % 12 == 0 ? 12 : d.hour % 12;
+      final m = two(d.minute);
+      final ampm = d.hour >= 12 ? 'PM' : 'AM';
+      return '$h:$m $ampm';
+    }
+
+    final s = start.toLocal();
+    final e = end.toLocal();
+    return '${two(s.day)}/${two(s.month)} ${hm(s)} – ${hm(e)}';
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final args = (
+      ngoId: 1,
+      status: status,
+      page: 1,
+      limit: 10,
+      q: null as String?,
+    );
+    final async = ref.watch(activitiesProvider(args));
+
+    return async.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => _ErrorHint(
+        message: 'No se pudieron cargar las actividades',
+        detail: e.toString(),
+        onRetry: () async {
+          await ref.refresh(activitiesProvider(args).future);
+        },
+      ),
+      data: (items) {
+        if (items.isEmpty) {
+          return ListView(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: [
+              _EmptyHint(
+                icon: status == 'completed'
+                    ? Icons.check_circle_outline_rounded
+                    : Icons.pending_actions_rounded,
+                text: status == 'completed'
+                    ? 'Aún no hay actividades completadas.'
+                    : (status == 'in_progress'
+                          ? 'No hay actividades en curso.'
+                          : 'No hay actividades próximas.'),
+              ),
+            ],
+          );
+        }
+
+        return RefreshIndicator(
+          onRefresh: () async {
+            await ref.refresh(activitiesProvider(args).future);
+          },
+          child: ListView.separated(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            itemCount: items.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            itemBuilder: (context, i) {
+              final a = items[i];
+              return _ActivityCard(
+                title: a.title,
+                dateText: _formatDateRange(a.start, a.end),
+                imageUrl: null,
+                onEdit: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Edición próximamente')),
+                  );
+                },
+                onCloseEnroll: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Acción próximamente')),
+                  );
+                },
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
@@ -165,11 +236,15 @@ class _ActivityCard extends StatelessWidget {
   final String title;
   final String dateText;
   final String? imageUrl;
+  final VoidCallback onEdit;
+  final VoidCallback onCloseEnroll;
 
   const _ActivityCard({
     required this.title,
     required this.dateText,
     this.imageUrl,
+    required this.onEdit,
+    required this.onCloseEnroll,
   });
 
   @override
@@ -214,18 +289,14 @@ class _ActivityCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-
             Row(
               children: [
-                _SecondaryButton(
-                  label: 'Editar',
-                  onPressed: () {},
-                ),
+                _SecondaryButton(label: 'Editar', onPressed: onEdit),
                 const SizedBox(width: 10),
                 Expanded(
                   child: _PrimaryButton(
                     label: 'Cerrar inscripciones',
-                    onPressed: () {},
+                    onPressed: onCloseEnroll,
                   ),
                 ),
               ],
@@ -253,15 +324,20 @@ class _Thumb extends StatelessWidget {
         child: imageUrl == null
             ? Container(
                 color: theme.colorScheme.surface,
-                child: Icon(Icons.image, color: theme.textTheme.bodySmall?.color),
+                child: Icon(
+                  Icons.image,
+                  color: theme.textTheme.bodySmall?.color,
+                ),
               )
             : Image.network(
                 imageUrl!,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
                   color: theme.colorScheme.surface,
-                  child: Icon(Icons.broken_image_rounded,
-                      color: theme.textTheme.bodySmall?.color),
+                  child: Icon(
+                    Icons.broken_image_rounded,
+                    color: theme.textTheme.bodySmall?.color,
+                  ),
                 ),
               ),
       ),
@@ -339,6 +415,56 @@ class _EmptyHint extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ErrorHint extends StatelessWidget {
+  const _ErrorHint({
+    required this.message,
+    required this.detail,
+    required this.onRetry,
+  });
+
+  final String message;
+  final String detail;
+  final Future<void> Function() onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.wifi_off_rounded,
+              size: 42,
+              color: theme.colorScheme.error,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              message,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              detail,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall,
+            ),
+            const SizedBox(height: 12),
+            FilledButton(
+              onPressed: () => onRetry(),
+              child: const Text('Reintentar'),
+            ),
+          ],
+        ),
       ),
     );
   }
