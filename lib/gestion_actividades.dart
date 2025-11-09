@@ -209,19 +209,41 @@ class _ActivitiesTab extends ConsumerWidget {
             separatorBuilder: (_, __) => const SizedBox(height: 12),
             itemBuilder: (context, i) {
               final a = items[i];
+              final isClosed = a.status != 'open';
+
               return _ActivityCard(
                 title: a.title,
                 dateText: _formatDateRange(a.start, a.end),
                 imageUrl: null,
+                closed: isClosed,
                 onEdit: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Edición próximamente')),
+                  Navigator.pushNamed(
+                    context,
+                    '/publicar-actividad',
+                    arguments: a,
                   );
                 },
-                onCloseEnroll: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Acción próximamente')),
-                  );
+                onCloseEnroll: () async {
+                  try {
+                    await ref
+                        .read(activitiesServiceProvider)
+                        .closeActivity(activityId: a.id);
+
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Inscripciones cerradas')),
+                      );
+                    }
+
+                    // Refrescar la lista
+                    await ref.refresh(activitiesProvider(args).future);
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('No se pudo cerrar: $e')),
+                      );
+                    }
+                  }
                 },
               );
             },
@@ -236,6 +258,7 @@ class _ActivityCard extends StatelessWidget {
   final String title;
   final String dateText;
   final String? imageUrl;
+  final bool closed;
   final VoidCallback onEdit;
   final VoidCallback onCloseEnroll;
 
@@ -243,6 +266,7 @@ class _ActivityCard extends StatelessWidget {
     required this.title,
     required this.dateText,
     this.imageUrl,
+    required this.closed,
     required this.onEdit,
     required this.onCloseEnroll,
   });
@@ -295,8 +319,10 @@ class _ActivityCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: _PrimaryButton(
-                    label: 'Cerrar inscripciones',
-                    onPressed: onCloseEnroll,
+                    label: closed
+                        ? 'Inscripciones cerradas'
+                        : 'Cerrar inscripciones',
+                    onPressed: closed ? null : onCloseEnroll,
                   ),
                 ),
               ],
@@ -369,7 +395,7 @@ class _SecondaryButton extends StatelessWidget {
 
 class _PrimaryButton extends StatelessWidget {
   final String label;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   const _PrimaryButton({required this.label, required this.onPressed});
 
   @override
@@ -382,6 +408,8 @@ class _PrimaryButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         textStyle: const TextStyle(fontWeight: FontWeight.bold),
+        disabledBackgroundColor: AppTheme.primaryColor.withOpacity(0.25),
+        disabledForegroundColor: Colors.white,
       ),
       child: Text(label),
     );

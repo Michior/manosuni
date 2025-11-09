@@ -32,16 +32,29 @@ class Activity {
   factory Activity.fromJson(Map<String, dynamic> j) => Activity(
     id: int.parse(j['activity_id'].toString()),
     ngoId: int.parse(j['ngo_id'].toString()),
-    title: j['title'] ?? '',
-    description: j['description'] ?? '',
-    category: j['category'] ?? '',
-    modality: j['modality'] ?? '',
+    title: (j['title'] ?? '').toString(),
+    description: (j['description'] ?? '').toString(),
+    category: (j['category'] ?? '').toString(),
+    modality: (j['modality'] ?? '').toString(),
     start: DateTime.parse(j['start_datetime'].toString()),
     end: DateTime.parse(j['end_datetime'].toString()),
     capacity: int.tryParse(j['capacity'].toString()) ?? 0,
-    status: j['status'] ?? 'open',
+    status: (j['status'] ?? 'open').toString(),
     enrolledCount: int.tryParse(j['enrolled_count'].toString()) ?? 0,
   );
+}
+
+extension ActivityJson on Activity {
+  Map<String, dynamic> toJson() => {
+    'title': title,
+    'description': description,
+    'category': category,
+    'modality': modality,
+    'start_datetime': start.toIso8601String(),
+    'end_datetime': end.toIso8601String(),
+    'capacity': capacity,
+    'status': status,
+  };
 }
 
 class ActivitiesService {
@@ -56,7 +69,7 @@ class ActivitiesService {
     String? q,
   }) async {
     final res = await _dio.get(
-      '/ngo/activities',
+      'ngo/activities',
       queryParameters: {
         'ngo_id': ngoId,
         'status': status,
@@ -65,6 +78,7 @@ class ActivitiesService {
         if (q != null && q.isNotEmpty) 'q': q,
       },
     );
+
     if (res.data is Map && res.data['ok'] == true) {
       final List data = res.data['data'] as List? ?? [];
       return data.map((e) => Activity.fromJson(e)).toList();
@@ -72,16 +86,86 @@ class ActivitiesService {
     throw Exception('Error obteniendo actividades');
   }
 
+  Future<void> createActivity({
+    required int ngoId,
+    required String title,
+    required String description,
+    required String category,
+    required String modality,
+    required DateTime start,
+    required DateTime end,
+    required int capacity,
+  }) async {
+    final res = await _dio.post(
+      'ngo/activities',
+      data: {
+        'ngo_id': ngoId,
+        'title': title,
+        'description': description,
+        'category': category,
+        'modality': modality,
+        'start_datetime': start.toIso8601String(),
+        'end_datetime': end.toIso8601String(),
+        'capacity': capacity,
+        'status': 'open',
+      },
+    );
+    if (!(res.data is Map && res.data['ok'] == true)) {
+      throw Exception('No se pudo crear la actividad');
+    }
+  }
+
+  Future<void> updateActivity({
+    required int activityId,
+    required String title,
+    required String description,
+    required String category,
+    required String modality,
+    required DateTime start,
+    required DateTime end,
+    required int capacity,
+  }) async {
+    final res = await _dio.put(
+      'ngo/activities/$activityId',
+      data: {
+        'title': title,
+        'description': description,
+        'category': category,
+        'modality': modality,
+        'start_datetime': start.toIso8601String(),
+        'end_datetime': end.toIso8601String(),
+        'capacity': capacity,
+      },
+    );
+    if (!(res.data is Map && res.data['ok'] == true)) {
+      throw Exception('No se pudo actualizar la actividad');
+    }
+  }
+
   Future<void> updateStatus({
     required int activityId,
     required String status,
   }) async {
     final res = await _dio.put(
-      '/ngo/activities/$activityId/status',
+      'ngo/activities/$activityId/status',
       data: {'status': status},
     );
     if (!(res.data is Map && res.data['ok'] == true)) {
       throw Exception('No se pudo actualizar el estado');
+    }
+  }
+
+  Future<void> closeActivity({required int activityId}) async {
+    try {
+      final res = await _dio.patch(
+        'ngo/activities/$activityId',
+        data: {'status': 'closed'},
+      );
+      if (!(res.data is Map && res.data['ok'] == true)) {
+        throw Exception('Respuesta inválida al cerrar');
+      }
+    } on DioException {
+      await updateStatus(activityId: activityId, status: 'closed');
     }
   }
 }
@@ -95,7 +179,7 @@ final activitiesProvider =
     FutureProvider.family<
       List<Activity>,
       ({int ngoId, String status, int page, int limit, String? q})
-    >((ref, args) async {
+    >((ref, args) {
       final svc = ref.read(activitiesServiceProvider);
       return svc.fetchActivities(
         ngoId: args.ngoId,
