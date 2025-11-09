@@ -69,7 +69,7 @@ class ActivitiesService {
     String? q,
   }) async {
     final res = await _dio.get(
-      'ngo/activities',
+      '/ngo/activities',
       queryParameters: {
         'ngo_id': ngoId,
         'status': status,
@@ -97,7 +97,7 @@ class ActivitiesService {
     required int capacity,
   }) async {
     final res = await _dio.post(
-      'ngo/activities',
+      '/ngo/activities',
       data: {
         'ngo_id': ngoId,
         'title': title,
@@ -126,7 +126,7 @@ class ActivitiesService {
     required int capacity,
   }) async {
     final res = await _dio.put(
-      'ngo/activities/$activityId',
+      '/ngo/activities/$activityId',
       data: {
         'title': title,
         'description': description,
@@ -147,7 +147,7 @@ class ActivitiesService {
     required String status,
   }) async {
     final res = await _dio.put(
-      'ngo/activities/$activityId/status',
+      '/ngo/activities/$activityId/status',
       data: {'status': status},
     );
     if (!(res.data is Map && res.data['ok'] == true)) {
@@ -158,7 +158,7 @@ class ActivitiesService {
   Future<void> closeActivity({required int activityId}) async {
     try {
       final res = await _dio.patch(
-        'ngo/activities/$activityId',
+        '/ngo/activities/$activityId',
         data: {'status': 'closed'},
       );
       if (!(res.data is Map && res.data['ok'] == true)) {
