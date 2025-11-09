@@ -90,6 +90,48 @@ class GestionVoluntariosScreen extends ConsumerWidget {
           ),
         ),
         data: (vols) {
+          if (vols.isEmpty) {
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: theme.scaffoldBackgroundColor,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.primaryColor.withOpacity(0.05),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 6),
+                      Icon(
+                        Icons.groups_2_outlined,
+                        size: 42,
+                        color: theme.textTheme.bodySmall?.color,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Aún no hay voluntarios o el endpoint no está disponible.',
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: theme.textTheme.bodySmall?.color,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          }
+
           return RefreshIndicator(
             onRefresh: () => ref.refresh(volunteersProvider(activityId).future),
             child: ListView(
@@ -146,7 +188,6 @@ class GestionVoluntariosScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 12),
 
-                      // Lista
                       for (final v in vols) ...[
                         _VolunteerTile(
                           name: v.name,
@@ -157,17 +198,25 @@ class GestionVoluntariosScreen extends ConsumerWidget {
                               : _VolunteerTrailing.validate,
                           avatarTone: _avatarTone(v.status),
                           onValidate: () async {
-                            await markAttendance(
-                              ref,
-                              activityId: activityId,
-                              volunteerId: v.id,
-                              status: 'attended',
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Marcado como asistió'),
-                              ),
-                            );
+                            try {
+                              await markAttendance(
+                                ref,
+                                activityId: activityId,
+                                volunteerId: v.id,
+                                status: 'attended',
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Marcado como asistió'),
+                                ),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('No se pudo validar: $e'),
+                                ),
+                              );
+                            }
                           },
                         ),
                         const SizedBox(height: 10),
