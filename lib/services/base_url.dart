@@ -1,2 +1,2 @@
 
-const String kApiBaseUrl = 'https://<TU-SUBDOMINIO>.ngrok-free.dev/api';
+const String kApiBaseUrl = 'https://multipinnate-kayla-agrobiologically.ngrok-free.dev';
