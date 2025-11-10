@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+<<<<<<< Updated upstream
 
 // Importa todas tus pantallas aquí
 import 'generate_qr_screen.dart';
@@ -12,6 +13,18 @@ import 'ngo_help_screen.dart';
 
 void main() {
   runApp(const MainApp());
+=======
+import 'package:flutter_riverpod/flutter_riverpod.dart'; 
+import 'package:manosuni/core/theme/app_theme.dart';
+import 'package:manosuni/app/app_router.dart';
+
+void main() {
+  runApp(
+    const ProviderScope( 
+      child: MyApp(),
+    ),
+  );
+>>>>>>> Stashed changes
 }
 
 class MainApp extends StatelessWidget {
@@ -19,13 +32,30 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< Updated upstream
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: const ScreensMenu(),
+=======
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeNotifier,
+      builder: (_, currentMode, __) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'ManosUni',
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: currentMode,
+          initialRoute: AppRouter.initialRoute,
+          routes: AppRouter.routes,
+        );
+      },
+>>>>>>> Stashed changes
     );
   }
 }
 
+<<<<<<< Updated upstream
 class ScreensMenu extends StatelessWidget {
   const ScreensMenu({super.key});
 
@@ -73,3 +103,5 @@ class _ScreenItem {
 
   _ScreenItem(this.title, this.widget);
 }
+=======
+>>>>>>> Stashed changes

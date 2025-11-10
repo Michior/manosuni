@@ -9,7 +9,16 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+<<<<<<< Updated upstream
   fl_chart: ^0.69.0
+=======
+  fl_chart: ^0.68.0
+  http: ^1.5.0
+  dio: ^5.9.0
+  cached_network_image: ^3.4.1
+  flutter_riverpod: ^3.0.3  
+  cupertino_icons: ^1.0.8   
+>>>>>>> Stashed changes
 
 dev_dependencies:
   flutter_test:
