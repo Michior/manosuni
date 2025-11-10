@@ -146,13 +146,37 @@ class ActivitiesService {
     required int activityId,
     required String status,
   }) async {
-    final res = await _dio.patch(
-      '/ngo/activities/$activityId',
-      data: {'status': status},
-    );
-    if (!(res.data is Map && res.data['ok'] == true)) {
-      throw Exception('No se pudo cambiar el estado');
+    Response res;
+
+    try {
+      res = await _dio.patch(
+        '/ngo/activities/$activityId',
+        data: {'status': status},
+      );
+      if (res.data is Map && res.data['ok'] == true) return;
+    } on DioException catch (_) {}
+
+    try {
+      res = await _dio.put(
+        '/ngo/activities/$activityId/status',
+        data: {'status': status},
+      );
+      if (res.data is Map && res.data['ok'] == true) return;
+    } on DioException catch (_) {}
+
+    try {
+      res = await _dio.put(
+        '/ngo/activities/$activityId',
+        data: {'status': status},
+      );
+      if (res.data is Map && res.data['ok'] == true) return;
+    } on DioException catch (e) {
+      throw Exception(
+        'No se pudo cambiar el estado (${e.response?.statusCode})',
+      );
     }
+
+    throw Exception('No se pudo cambiar el estado');
   }
 
   Future<void> closeActivity({required int activityId}) =>

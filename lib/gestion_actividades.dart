@@ -46,16 +46,36 @@ class _GestionActividadesScreenState
     }
   }
 
-  // ==== UTIL ====
-  Future<void> _refreshTab(WidgetRef ref, String status) async {
-    final args = (
-      ngoId: 1,
-      status: status,
-      page: 1,
-      limit: 10,
-      q: null as String?,
-    );
-    await ref.refresh(activitiesProvider(args).future);
+  Future<void> _refreshAll() async {
+    await Future.wait([
+      ref.refresh(
+        activitiesProvider((
+          ngoId: 1,
+          status: 'open',
+          page: 1,
+          limit: 10,
+          q: null,
+        )).future,
+      ),
+      ref.refresh(
+        activitiesProvider((
+          ngoId: 1,
+          status: 'closed',
+          page: 1,
+          limit: 10,
+          q: null,
+        )).future,
+      ),
+      ref.refresh(
+        activitiesProvider((
+          ngoId: 1,
+          status: 'completed',
+          page: 1,
+          limit: 10,
+          q: null,
+        )).future,
+      ),
+    ]);
   }
 
   @override
@@ -117,49 +137,36 @@ class _GestionActividadesScreenState
         children: [
           _ActivitiesTab(
             status: 'open',
-
             primaryLabel: 'Cerrar inscripciones',
-            primaryEnabled: (a) => a.status == 'open',
-            onPrimary: (context, ref, a) async {
+            onPrimary: (ref, id) async {
               await ref
                   .read(activitiesServiceProvider)
-                  .closeActivity(activityId: a.id);
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Inscripciones cerradas')),
-                );
-              }
-              await _refreshTab(ref, 'open');
-              await _refreshTab(ref, 'closed');
-              _tabs.animateTo(1);
+                  .closeActivity(activityId: id);
+            },
+            afterSuccess: () async {
+              _tabs.index = 1;
+              await _refreshAll();
             },
           ),
-
           _ActivitiesTab(
             status: 'closed',
-
             primaryLabel: 'Terminar',
-            primaryEnabled: (a) => a.status == 'closed',
-            onPrimary: (context, ref, a) async {
+            onPrimary: (ref, id) async {
               await ref
                   .read(activitiesServiceProvider)
-                  .completeActivity(activityId: a.id);
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Actividad terminada')),
-                );
-              }
-              await _refreshTab(ref, 'closed');
-              await _refreshTab(ref, 'completed');
-              _tabs.animateTo(2);
+                  .completeActivity(activityId: id);
+            },
+            afterSuccess: () async {
+              // a Completadas
+              _tabs.index = 2;
+              await _refreshAll();
             },
           ),
-
           _ActivitiesTab(
             status: 'completed',
             primaryLabel: 'Completada',
-            primaryEnabled: (a) => false,
-            onPrimary: (context, ref, a) async {},
+            onPrimary: null,
+            afterSuccess: null,
           ),
         ],
       ),
@@ -199,14 +206,14 @@ class _ActivitiesTab extends ConsumerWidget {
   const _ActivitiesTab({
     required this.status,
     required this.primaryLabel,
-    required this.primaryEnabled,
     required this.onPrimary,
+    required this.afterSuccess,
   });
 
   final String status;
   final String primaryLabel;
-  final bool Function(Activity) primaryEnabled;
-  final Future<void> Function(BuildContext, WidgetRef, Activity) onPrimary;
+  final Future<void> Function(WidgetRef ref, int id)? onPrimary;
+  final Future<void> Function()? afterSuccess;
 
   String _formatDateRange(DateTime start, DateTime end) {
     String two(int n) => n.toString().padLeft(2, '0');
@@ -238,21 +245,24 @@ class _ActivitiesTab extends ConsumerWidget {
       error: (e, _) => _ErrorHint(
         message: 'No se pudieron cargar las actividades',
         detail: e.toString(),
-        onRetry: () async => ref.refresh(activitiesProvider(args).future),
+        onRetry: () async {
+          await ref.refresh(activitiesProvider(args).future);
+        },
       ),
       data: (items) {
         if (items.isEmpty) {
           return ListView(
-            padding: const EdgeInsets.fromLTRB(16, 48, 16, 16),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            physics: const AlwaysScrollableScrollPhysics(),
             children: [
               _EmptyHint(
                 icon: status == 'completed'
                     ? Icons.check_circle_outline_rounded
                     : (status == 'closed'
-                          ? Icons.photo_camera_outlined
-                          : Icons.pending_actions_rounded),
+                          ? Icons.pending_actions_rounded
+                          : Icons.event_available_rounded),
                 text: status == 'completed'
-                    ? 'No hay actividades completadas.'
+                    ? 'Aún no hay actividades completadas.'
                     : (status == 'closed'
                           ? 'No hay actividades en curso.'
                           : 'No hay actividades próximas.'),
@@ -262,27 +272,55 @@ class _ActivitiesTab extends ConsumerWidget {
         }
 
         return RefreshIndicator(
-          onRefresh: () async => ref.refresh(activitiesProvider(args).future),
+          onRefresh: () async {
+            await ref.refresh(activitiesProvider(args).future);
+          },
           child: ListView.separated(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             itemCount: items.length,
             separatorBuilder: (_, __) => const SizedBox(height: 12),
             itemBuilder: (context, i) {
               final a = items[i];
+              final disabled = onPrimary == null;
 
               return _ActivityCard(
                 title: a.title,
                 dateText: _formatDateRange(a.start, a.end),
                 imageUrl: null,
-                closed: a.status != 'open',
+                primaryDisabled: disabled,
                 primaryLabel: primaryLabel,
-                primaryEnabled: primaryEnabled(a),
-                onPrimary: () => onPrimary(context, ref, a),
-                onEdit: () => Navigator.pushNamed(
-                  context,
-                  '/publicar-actividad',
-                  arguments: a,
-                ),
+                onEdit: () {
+                  Navigator.pushNamed(
+                    context,
+                    '/publicar-actividad',
+                    arguments: a,
+                  );
+                },
+                onPrimary: disabled
+                    ? null
+                    : () async {
+                        try {
+                          await onPrimary!(ref, a.id);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  status == 'open'
+                                      ? 'Inscripciones cerradas'
+                                      : 'Actividad completada',
+                                ),
+                              ),
+                            );
+                          }
+                          if (afterSuccess != null) await afterSuccess!();
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Operación fallida: $e')),
+                            );
+                          }
+                        }
+                      },
               );
             },
           ),
@@ -296,19 +334,17 @@ class _ActivityCard extends StatelessWidget {
   final String title;
   final String dateText;
   final String? imageUrl;
-  final bool closed;
+  final bool primaryDisabled;
   final String primaryLabel;
-  final bool primaryEnabled;
   final VoidCallback onEdit;
-  final VoidCallback onPrimary;
+  final VoidCallback? onPrimary;
 
   const _ActivityCard({
     required this.title,
     required this.dateText,
     this.imageUrl,
-    required this.closed,
+    required this.primaryDisabled,
     required this.primaryLabel,
-    required this.primaryEnabled,
     required this.onEdit,
     required this.onPrimary,
   });
@@ -362,7 +398,7 @@ class _ActivityCard extends StatelessWidget {
                 Expanded(
                   child: _PrimaryButton(
                     label: primaryLabel,
-                    onPressed: primaryEnabled ? onPrimary : null,
+                    onPressed: primaryDisabled ? null : onPrimary,
                   ),
                 ),
               ],
