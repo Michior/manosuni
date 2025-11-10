@@ -28,7 +28,7 @@ class Activity {
     required this.status,
     required this.enrolledCount,
   });
-
+//
   factory Activity.fromJson(Map<String, dynamic> j) => Activity(
     id: int.parse(j['activity_id'].toString()),
     ngoId: int.parse(j['ngo_id'].toString()),
@@ -56,7 +56,7 @@ extension ActivityJson on Activity {
     'status': status,
   };
 }
-
+//
 class ActivitiesService {
   ActivitiesService(this._dio);
   final Dio _dio;
@@ -193,7 +193,7 @@ class ActivitiesService {
   Future<void> completeActivity({required int activityId}) =>
       setStatus(activityId: activityId, status: 'finished');
 }
-
+//
 final activitiesServiceProvider = Provider<ActivitiesService>((ref) {
   final dio = ref.read(dioProvider);
   return ActivitiesService(dio);

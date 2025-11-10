@@ -6,7 +6,7 @@ import 'services/activities_service.dart';
 
 class GestionActividadesScreen extends ConsumerStatefulWidget {
   const GestionActividadesScreen({super.key});
-
+//
   @override
   ConsumerState<GestionActividadesScreen> createState() =>
       _GestionActividadesScreenState();
@@ -28,7 +28,7 @@ class _GestionActividadesScreenState
     _tabs.dispose();
     super.dispose();
   }
-
+//
   void _onItemTapped(int index) {
     switch (index) {
       case 0:
@@ -69,7 +69,7 @@ class _GestionActividadesScreenState
       limit: 10,
       q: null as String?,
     );
-
+//
     ref.invalidate(activitiesProvider(openArgs));
     ref.invalidate(activitiesProvider(coursArgs));
     ref.invalidate(activitiesProvider(doneArgs));
@@ -203,7 +203,7 @@ class _GestionActividadesScreenState
     );
   }
 }
-
+//
 class _ActivitiesTab extends ConsumerWidget {
   const _ActivitiesTab({
     required this.status,
@@ -230,7 +230,7 @@ class _ActivitiesTab extends ConsumerWidget {
     final e = end.toLocal();
     return '${two(s.day)}/${two(s.month)} ${hm(s)} – ${hm(e)}';
   }
-
+//
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final args = (
