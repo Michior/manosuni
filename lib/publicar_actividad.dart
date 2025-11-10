@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:manosuni/theme/app_theme.dart';
-
 import 'package:manosuni/services/activities_service.dart';
 
 class PublicarActividadScreen extends ConsumerStatefulWidget {
@@ -179,6 +178,8 @@ class _PublicarActividadScreenState
         );
         _showSnack('Actividad actualizada');
       }
+
+      ref.invalidate(activitiesProvider);
 
       if (mounted) {
         Navigator.popUntil(
@@ -525,7 +526,7 @@ class _UploadMock extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return InkWell(
-      onTap: () {}, // mock
+      onTap: () {},
       borderRadius: BorderRadius.circular(14),
       child: Container(
         height: 110,

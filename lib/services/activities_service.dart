@@ -155,18 +155,12 @@ class ActivitiesService {
     }
   }
 
-  Future<void> closeActivity({required int activityId}) async {
-    try {
-      final res = await _dio.patch(
-        '/ngo/activities/$activityId',
-        data: {'status': 'closed'},
-      );
-      if (!(res.data is Map && res.data['ok'] == true)) {
-        throw Exception('Respuesta inválida al cerrar');
-      }
-    } on DioException {
-      await updateStatus(activityId: activityId, status: 'closed');
-    }
+  Future<void> startActivity(int activityId) async {
+    await updateStatus(activityId: activityId, status: 'in_progress');
+  }
+
+  Future<void> completeActivity(int activityId) async {
+    await updateStatus(activityId: activityId, status: 'completed');
   }
 }
 

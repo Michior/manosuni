@@ -102,10 +102,19 @@ class _GestionActividadesScreenState
 
       body: TabBarView(
         controller: _tabs,
-        children: const [
-          _ActivitiesTab(status: 'open'),
-          _ActivitiesTab(status: 'in_progress'),
-          _ActivitiesTab(status: 'completed'),
+        children: [
+          _ActivitiesTab(
+            status: 'open',
+            onSwitchTab: (i) => setState(() => _tabs.index = i),
+          ),
+          _ActivitiesTab(
+            status: 'in_progress',
+            onSwitchTab: (i) => setState(() => _tabs.index = i),
+          ),
+          _ActivitiesTab(
+            status: 'completed',
+            onSwitchTab: (i) => setState(() => _tabs.index = i),
+          ),
         ],
       ),
 
@@ -141,9 +150,10 @@ class _GestionActividadesScreenState
 }
 
 class _ActivitiesTab extends ConsumerWidget {
-  const _ActivitiesTab({required this.status});
+  const _ActivitiesTab({required this.status, required this.onSwitchTab});
 
   final String status;
+  final ValueChanged<int> onSwitchTab;
 
   String _formatDateRange(DateTime start, DateTime end) {
     String two(int n) => n.toString().padLeft(2, '0');
@@ -170,14 +180,20 @@ class _ActivitiesTab extends ConsumerWidget {
     );
     final async = ref.watch(activitiesProvider(args));
 
+    Future<void> refreshTab() async =>
+        ref.refresh(activitiesProvider(args).future);
+
+    Future<void> moveToTab(int i) async {
+      await refreshTab();
+      onSwitchTab(i);
+    }
+
     return async.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => _ErrorHint(
         message: 'No se pudieron cargar las actividades',
         detail: e.toString(),
-        onRetry: () async {
-          await ref.refresh(activitiesProvider(args).future);
-        },
+        onRetry: () async => refreshTab(),
       ),
       data: (items) {
         if (items.isEmpty) {
@@ -188,55 +204,45 @@ class _ActivitiesTab extends ConsumerWidget {
               _EmptyHint(
                 icon: status == 'completed'
                     ? Icons.check_circle_outline_rounded
+                    : status == 'in_progress'
+                    ? Icons.timelapse_rounded
                     : Icons.pending_actions_rounded,
                 text: status == 'completed'
                     ? 'Aún no hay actividades completadas.'
-                    : (status == 'in_progress'
-                          ? 'No hay actividades en curso.'
-                          : 'No hay actividades próximas.'),
+                    : status == 'in_progress'
+                    ? 'No hay actividades en curso.'
+                    : 'No hay actividades próximas.',
               ),
             ],
           );
         }
 
         return RefreshIndicator(
-          onRefresh: () async {
-            await ref.refresh(activitiesProvider(args).future);
-          },
+          onRefresh: () async => refreshTab(),
           child: ListView.separated(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             itemCount: items.length,
             separatorBuilder: (_, __) => const SizedBox(height: 12),
             itemBuilder: (context, i) {
               final a = items[i];
-              final isClosed = a.status != 'open';
 
-              return _ActivityCard(
-                title: a.title,
-                dateText: _formatDateRange(a.start, a.end),
-                imageUrl: null,
-                closed: isClosed,
-                onEdit: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/publicar-actividad',
-                    arguments: a,
-                  );
-                },
-                onCloseEnroll: () async {
+              String primaryLabel;
+              VoidCallback? primaryAction;
+
+              if (a.status == 'open') {
+                primaryLabel = 'Cerrar inscripciones';
+                primaryAction = () async {
                   try {
                     await ref
                         .read(activitiesServiceProvider)
-                        .closeActivity(activityId: a.id);
+                        .startActivity(a.id);
 
+                    await moveToTab(1);
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Inscripciones cerradas')),
                       );
                     }
-
-                    // Refrescar la lista
-                    await ref.refresh(activitiesProvider(args).future);
                   } catch (e) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -244,6 +250,46 @@ class _ActivitiesTab extends ConsumerWidget {
                       );
                     }
                   }
+                };
+              } else if (a.status == 'in_progress') {
+                primaryLabel = 'Terminar actividad';
+                primaryAction = () async {
+                  try {
+                    await ref
+                        .read(activitiesServiceProvider)
+                        .completeActivity(a.id);
+
+                    await moveToTab(2);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Actividad completada')),
+                      );
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('No se pudo completar: $e')),
+                      );
+                    }
+                  }
+                };
+              } else {
+                primaryLabel = 'Actividad completada';
+                primaryAction = null;
+              }
+
+              return _ActivityCard(
+                title: a.title,
+                dateText: _formatDateRange(a.start, a.end),
+                imageUrl: null,
+                primaryLabel: primaryLabel,
+                onPrimary: primaryAction,
+                onEdit: () {
+                  Navigator.pushNamed(
+                    context,
+                    '/publicar-actividad',
+                    arguments: a,
+                  );
                 },
               );
             },
@@ -258,17 +304,17 @@ class _ActivityCard extends StatelessWidget {
   final String title;
   final String dateText;
   final String? imageUrl;
-  final bool closed;
+  final String primaryLabel;
+  final VoidCallback? onPrimary;
   final VoidCallback onEdit;
-  final VoidCallback onCloseEnroll;
 
   const _ActivityCard({
     required this.title,
     required this.dateText,
     this.imageUrl,
-    required this.closed,
+    required this.primaryLabel,
+    required this.onPrimary,
     required this.onEdit,
-    required this.onCloseEnroll,
   });
 
   @override
@@ -319,10 +365,8 @@ class _ActivityCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: _PrimaryButton(
-                    label: closed
-                        ? 'Inscripciones cerradas'
-                        : 'Cerrar inscripciones',
-                    onPressed: closed ? null : onCloseEnroll,
+                    label: primaryLabel,
+                    onPressed: onPrimary,
                   ),
                 ),
               ],
@@ -341,7 +385,6 @@ class _Thumb extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: SizedBox(
