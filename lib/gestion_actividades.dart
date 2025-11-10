@@ -4,10 +4,32 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'theme/app_theme.dart';
 import 'services/activities_service.dart';
 
-class GestionActividadesScreen extends ConsumerWidget {
+class GestionActividadesScreen extends ConsumerStatefulWidget {
   const GestionActividadesScreen({super.key});
 
-  void _onItemTapped(BuildContext context, int index) {
+  @override
+  ConsumerState<GestionActividadesScreen> createState() =>
+      _GestionActividadesScreenState();
+}
+
+class _GestionActividadesScreenState
+    extends ConsumerState<GestionActividadesScreen>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabs;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabs = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabs.dispose();
+    super.dispose();
+  }
+
+  void _onItemTapped(int index) {
     switch (index) {
       case 0:
         Navigator.pushNamed(context, '/dashboard-ong');
@@ -24,103 +46,167 @@ class GestionActividadesScreen extends ConsumerWidget {
     }
   }
 
+  // ==== UTIL ====
+  Future<void> _refreshTab(WidgetRef ref, String status) async {
+    final args = (
+      ngoId: 1,
+      status: status,
+      page: 1,
+      limit: 10,
+      q: null as String?,
+    );
+    await ref.refresh(activitiesProvider(args).future);
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        backgroundColor: theme.scaffoldBackgroundColor,
-        appBar: AppBar(
-          backgroundColor: theme.appBarTheme.backgroundColor,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: theme.appBarTheme.foregroundColor,
-            ),
-            onPressed: () => Navigator.of(context).maybePop(),
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: theme.appBarTheme.backgroundColor,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: theme.appBarTheme.foregroundColor,
           ),
-          centerTitle: true,
-          title: Text(
-            'Actividades',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.appBarTheme.foregroundColor,
-            ),
+          onPressed: () => Navigator.of(context).maybePop(),
+        ),
+        centerTitle: true,
+        title: Text(
+          'Actividades',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: theme.appBarTheme.foregroundColor,
           ),
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(48),
-            child: Container(
-              height: 48,
-              margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surface,
-                borderRadius: BorderRadius.circular(16),
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Container(
+            height: 48,
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            alignment: Alignment.centerLeft,
+            child: TabBar(
+              controller: _tabs,
+              indicatorColor: AppTheme.primaryColor,
+              labelColor: AppTheme.primaryColor,
+              unselectedLabelColor: theme.textTheme.bodySmall?.color,
+              labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.w600,
               ),
-              alignment: Alignment.centerLeft,
-              child: const TabBar(
-                indicatorColor: AppTheme.primaryColor,
-                labelColor: AppTheme.primaryColor,
-                unselectedLabelColor: Colors.black54,
-                labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w600),
-                indicatorSize: TabBarIndicatorSize.label,
-                tabs: [
-                  Tab(text: 'Próximas'),
-                  Tab(text: 'En curso'),
-                  Tab(text: 'Completadas'),
-                ],
-              ),
+              indicatorSize: TabBarIndicatorSize.label,
+              tabs: const [
+                Tab(text: 'Próximas'),
+                Tab(text: 'En curso'),
+                Tab(text: 'Completadas'),
+              ],
             ),
           ),
         ),
+      ),
 
-        body: const TabBarView(
-          children: [
-            _ActivitiesTab(status: 'open'),
-            _ActivitiesTab(status: 'in_progress'),
-            _ActivitiesTab(status: 'completed'),
-          ],
-        ),
+      body: TabBarView(
+        controller: _tabs,
+        children: [
+          _ActivitiesTab(
+            status: 'open',
 
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => Navigator.pushNamed(context, '/publicar-actividad'),
-          tooltip: 'Añadir actividad',
-          backgroundColor: AppTheme.primaryColor,
-          child: const Icon(Icons.add_rounded, color: Colors.white),
-        ),
+            primaryLabel: 'Cerrar inscripciones',
+            primaryEnabled: (a) => a.status == 'open',
+            onPrimary: (context, ref, a) async {
+              await ref
+                  .read(activitiesServiceProvider)
+                  .closeActivity(activityId: a.id);
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Inscripciones cerradas')),
+                );
+              }
+              await _refreshTab(ref, 'open');
+              await _refreshTab(ref, 'closed');
+              _tabs.animateTo(1);
+            },
+          ),
 
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          currentIndex: 1,
-          selectedItemColor: AppTheme.primaryColor,
-          unselectedItemColor:
-              theme.bottomNavigationBarTheme.unselectedItemColor,
-          backgroundColor: theme.bottomNavigationBarTheme.backgroundColor,
-          onTap: (i) => _onItemTapped(context, i),
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.event_note),
-              label: "Actividades",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.groups),
-              label: "Voluntarios",
-            ),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: "Perfil"),
-          ],
-        ),
+          _ActivitiesTab(
+            status: 'closed',
+
+            primaryLabel: 'Terminar',
+            primaryEnabled: (a) => a.status == 'closed',
+            onPrimary: (context, ref, a) async {
+              await ref
+                  .read(activitiesServiceProvider)
+                  .completeActivity(activityId: a.id);
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Actividad terminada')),
+                );
+              }
+              await _refreshTab(ref, 'closed');
+              await _refreshTab(ref, 'completed');
+              _tabs.animateTo(2);
+            },
+          ),
+
+          _ActivitiesTab(
+            status: 'completed',
+            primaryLabel: 'Completada',
+            primaryEnabled: (a) => false,
+            onPrimary: (context, ref, a) async {},
+          ),
+        ],
+      ),
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.pushNamed(context, '/publicar-actividad'),
+        tooltip: 'Añadir actividad',
+        backgroundColor: AppTheme.primaryColor,
+        child: const Icon(Icons.add_rounded, color: Colors.white),
+      ),
+
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: 1,
+        selectedItemColor: AppTheme.primaryColor,
+        unselectedItemColor: theme.bottomNavigationBarTheme.unselectedItemColor,
+        backgroundColor: theme.bottomNavigationBarTheme.backgroundColor,
+        onTap: _onItemTapped,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.event_note),
+            label: "Actividades",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.groups),
+            label: "Voluntarios",
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Perfil"),
+        ],
       ),
     );
   }
 }
 
 class _ActivitiesTab extends ConsumerWidget {
-  const _ActivitiesTab({required this.status});
+  const _ActivitiesTab({
+    required this.status,
+    required this.primaryLabel,
+    required this.primaryEnabled,
+    required this.onPrimary,
+  });
+
   final String status;
+  final String primaryLabel;
+  final bool Function(Activity) primaryEnabled;
+  final Future<void> Function(BuildContext, WidgetRef, Activity) onPrimary;
 
   String _formatDateRange(DateTime start, DateTime end) {
     String two(int n) => n.toString().padLeft(2, '0');
@@ -147,60 +233,27 @@ class _ActivitiesTab extends ConsumerWidget {
     );
     final async = ref.watch(activitiesProvider(args));
 
-    Future<void> _refreshAll() async {
-      await Future.wait([
-        ref.refresh(
-          activitiesProvider((
-            ngoId: 1,
-            status: 'open',
-            page: 1,
-            limit: 10,
-            q: null,
-          )).future,
-        ),
-        ref.refresh(
-          activitiesProvider((
-            ngoId: 1,
-            status: 'in_progress',
-            page: 1,
-            limit: 10,
-            q: null,
-          )).future,
-        ),
-        ref.refresh(
-          activitiesProvider((
-            ngoId: 1,
-            status: 'completed',
-            page: 1,
-            limit: 10,
-            q: null,
-          )).future,
-        ),
-      ]);
-    }
-
     return async.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => _ErrorHint(
         message: 'No se pudieron cargar las actividades',
         detail: e.toString(),
-        onRetry: () async => await ref.refresh(activitiesProvider(args).future),
+        onRetry: () async => ref.refresh(activitiesProvider(args).future),
       ),
       data: (items) {
         if (items.isEmpty) {
           return ListView(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(16, 48, 16, 16),
             children: [
               _EmptyHint(
                 icon: status == 'completed'
                     ? Icons.check_circle_outline_rounded
-                    : (status == 'in_progress'
-                          ? Icons.pending_actions_rounded
-                          : Icons.schedule_rounded),
+                    : (status == 'closed'
+                          ? Icons.photo_camera_outlined
+                          : Icons.pending_actions_rounded),
                 text: status == 'completed'
-                    ? 'Aún no hay actividades completadas.'
-                    : (status == 'in_progress'
+                    ? 'No hay actividades completadas.'
+                    : (status == 'closed'
                           ? 'No hay actividades en curso.'
                           : 'No hay actividades próximas.'),
               ),
@@ -209,8 +262,7 @@ class _ActivitiesTab extends ConsumerWidget {
         }
 
         return RefreshIndicator(
-          onRefresh: () async =>
-              await ref.refresh(activitiesProvider(args).future),
+          onRefresh: () async => ref.refresh(activitiesProvider(args).future),
           child: ListView.separated(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             itemCount: items.length,
@@ -218,62 +270,19 @@ class _ActivitiesTab extends ConsumerWidget {
             itemBuilder: (context, i) {
               final a = items[i];
 
-              final bool showClose = status == 'open';
-              final bool showFinish = status == 'in_progress';
-              final bool isCompleted = status == 'completed';
-
               return _ActivityCard(
                 title: a.title,
                 dateText: _formatDateRange(a.start, a.end),
                 imageUrl: null,
-                primaryLabel: showClose
-                    ? 'Cerrar inscripciones'
-                    : (showFinish ? 'Terminar' : 'Completada'),
-                primaryEnabled: showClose || showFinish ? true : false,
-                onEdit: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/publicar-actividad',
-                    arguments: a,
-                  );
-                },
-                onPrimary: (showClose || showFinish)
-                    ? () async {
-                        try {
-                          final svc = ref.read(activitiesServiceProvider);
-                          if (showClose) {
-                            await svc.closeActivity(activityId: a.id);
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Inscripciones cerradas'),
-                                ),
-                              );
-                              DefaultTabController.of(context)?.animateTo(1);
-                            }
-                          } else if (showFinish) {
-                            await svc.finishActivity(activity: a);
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Actividad marcada como completada',
-                                  ),
-                                ),
-                              );
-                              DefaultTabController.of(context)?.animateTo(2);
-                            }
-                          }
-                          await _refreshAll();
-                        } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Operación fallida: $e')),
-                            );
-                          }
-                        }
-                      }
-                    : null,
+                closed: a.status != 'open',
+                primaryLabel: primaryLabel,
+                primaryEnabled: primaryEnabled(a),
+                onPrimary: () => onPrimary(context, ref, a),
+                onEdit: () => Navigator.pushNamed(
+                  context,
+                  '/publicar-actividad',
+                  arguments: a,
+                ),
               );
             },
           ),
@@ -287,19 +296,21 @@ class _ActivityCard extends StatelessWidget {
   final String title;
   final String dateText;
   final String? imageUrl;
+  final bool closed;
   final String primaryLabel;
   final bool primaryEnabled;
   final VoidCallback onEdit;
-  final VoidCallback? onPrimary;
+  final VoidCallback onPrimary;
 
   const _ActivityCard({
     required this.title,
     required this.dateText,
     this.imageUrl,
+    required this.closed,
     required this.primaryLabel,
     required this.primaryEnabled,
     required this.onEdit,
-    this.onPrimary,
+    required this.onPrimary,
   });
 
   @override

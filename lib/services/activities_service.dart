@@ -63,18 +63,16 @@ class ActivitiesService {
 
   Future<List<Activity>> fetchActivities({
     required int ngoId,
-    required String uiStatus,
+    String status = 'open',
     int page = 1,
     int limit = 10,
     String? q,
   }) async {
-    final statusForApi = (uiStatus == 'open') ? 'open' : 'closed';
-
     final res = await _dio.get(
       '/ngo/activities',
       queryParameters: {
         'ngo_id': ngoId,
-        'status': statusForApi,
+        'status': status,
         'page': page,
         'limit': limit,
         if (q != null && q.isNotEmpty) 'q': q,
@@ -82,20 +80,8 @@ class ActivitiesService {
     );
 
     if (res.data is Map && res.data['ok'] == true) {
-      final List raw = res.data['data'] as List? ?? [];
-      final items = raw.map((e) => Activity.fromJson(e)).toList();
-
-      final now = DateTime.now();
-      if (uiStatus == 'in_progress') {
-        return items
-            .where((a) => !now.isBefore(a.start) && now.isBefore(a.end))
-            .toList();
-      }
-      if (uiStatus == 'completed') {
-        return items.where((a) => !now.isBefore(a.end)).toList();
-      }
-
-      return items.where((a) => now.isBefore(a.start)).toList();
+      final List data = res.data['data'] as List? ?? [];
+      return data.map((e) => Activity.fromJson(e)).toList();
     }
     throw Exception('Error obteniendo actividades');
   }
@@ -156,46 +142,24 @@ class ActivitiesService {
     }
   }
 
-  Future<void> closeActivity({required int activityId}) async {
-    try {
-      final res = await _dio.patch(
-        '/ngo/activities/$activityId',
-        data: {'status': 'closed'},
-      );
-      if (!(res.data is Map && res.data['ok'] == true)) {
-        throw Exception('Respuesta inválida al cerrar');
-      }
-    } on DioException {
-      final res = await _dio.put(
-        '/ngo/activities/$activityId',
-        data: {'status': 'closed'},
-      );
-      if (!(res.data is Map && res.data['ok'] == true)) {
-        throw Exception('No se pudo cerrar (PUT)');
-      }
+  Future<void> setStatus({
+    required int activityId,
+    required String status,
+  }) async {
+    final res = await _dio.patch(
+      '/ngo/activities/$activityId',
+      data: {'status': status},
+    );
+    if (!(res.data is Map && res.data['ok'] == true)) {
+      throw Exception('No se pudo cambiar el estado');
     }
   }
 
-  Future<void> finishActivity({required Activity activity}) async {
-    final now = DateTime.now();
-    try {
-      final res = await _dio.patch(
-        '/ngo/activities/${activity.id}',
-        data: {'status': 'closed', 'end_datetime': now.toIso8601String()},
-      );
-      if (!(res.data is Map && res.data['ok'] == true)) {
-        throw Exception('Respuesta inválida al terminar');
-      }
-    } on DioException {
-      final res = await _dio.put(
-        '/ngo/activities/${activity.id}',
-        data: {'status': 'closed', 'end_datetime': now.toIso8601String()},
-      );
-      if (!(res.data is Map && res.data['ok'] == true)) {
-        throw Exception('No se pudo terminar (PUT)');
-      }
-    }
-  }
+  Future<void> closeActivity({required int activityId}) =>
+      setStatus(activityId: activityId, status: 'closed');
+
+  Future<void> completeActivity({required int activityId}) =>
+      setStatus(activityId: activityId, status: 'completed');
 }
 
 final activitiesServiceProvider = Provider<ActivitiesService>((ref) {
@@ -211,7 +175,7 @@ final activitiesProvider =
       final svc = ref.read(activitiesServiceProvider);
       return svc.fetchActivities(
         ngoId: args.ngoId,
-        uiStatus: args.status,
+        status: args.status,
         page: args.page,
         limit: args.limit,
         q: args.q,
