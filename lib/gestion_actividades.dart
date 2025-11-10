@@ -147,6 +147,38 @@ class _ActivitiesTab extends ConsumerWidget {
     );
     final async = ref.watch(activitiesProvider(args));
 
+    Future<void> _refreshAll() async {
+      await Future.wait([
+        ref.refresh(
+          activitiesProvider((
+            ngoId: 1,
+            status: 'open',
+            page: 1,
+            limit: 10,
+            q: null,
+          )).future,
+        ),
+        ref.refresh(
+          activitiesProvider((
+            ngoId: 1,
+            status: 'in_progress',
+            page: 1,
+            limit: 10,
+            q: null,
+          )).future,
+        ),
+        ref.refresh(
+          activitiesProvider((
+            ngoId: 1,
+            status: 'completed',
+            page: 1,
+            limit: 10,
+            q: null,
+          )).future,
+        ),
+      ]);
+    }
+
     return async.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => _ErrorHint(
@@ -232,7 +264,7 @@ class _ActivitiesTab extends ConsumerWidget {
                               DefaultTabController.of(context)?.animateTo(2);
                             }
                           }
-                          await ref.refresh(activitiesProvider(args).future);
+                          await _refreshAll();
                         } catch (e) {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(

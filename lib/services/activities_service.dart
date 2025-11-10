@@ -156,35 +156,45 @@ class ActivitiesService {
     }
   }
 
-  Future<void> updateStatus({
-    required int activityId,
-    required String status,
-  }) async {
-    final res = await _dio.put(
-      '/ngo/activities/$activityId/status',
-      data: {'status': status},
-    );
-    if (!(res.data is Map && res.data['ok'] == true)) {
-      throw Exception('No se pudo actualizar el estado');
-    }
-  }
-
   Future<void> closeActivity({required int activityId}) async {
-    await updateStatus(activityId: activityId, status: 'closed');
+    try {
+      final res = await _dio.patch(
+        '/ngo/activities/$activityId',
+        data: {'status': 'closed'},
+      );
+      if (!(res.data is Map && res.data['ok'] == true)) {
+        throw Exception('Respuesta inválida al cerrar');
+      }
+    } on DioException {
+      final res = await _dio.put(
+        '/ngo/activities/$activityId',
+        data: {'status': 'closed'},
+      );
+      if (!(res.data is Map && res.data['ok'] == true)) {
+        throw Exception('No se pudo cerrar (PUT)');
+      }
+    }
   }
 
   Future<void> finishActivity({required Activity activity}) async {
     final now = DateTime.now();
-    await updateActivity(
-      activityId: activity.id,
-      title: activity.title,
-      description: activity.description,
-      category: activity.category,
-      modality: activity.modality,
-      start: activity.start,
-      end: now,
-      capacity: activity.capacity,
-    );
+    try {
+      final res = await _dio.patch(
+        '/ngo/activities/${activity.id}',
+        data: {'status': 'closed', 'end_datetime': now.toIso8601String()},
+      );
+      if (!(res.data is Map && res.data['ok'] == true)) {
+        throw Exception('Respuesta inválida al terminar');
+      }
+    } on DioException {
+      final res = await _dio.put(
+        '/ngo/activities/${activity.id}',
+        data: {'status': 'closed', 'end_datetime': now.toIso8601String()},
+      );
+      if (!(res.data is Map && res.data['ok'] == true)) {
+        throw Exception('No se pudo terminar (PUT)');
+      }
+    }
   }
 }
 
