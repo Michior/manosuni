@@ -63,16 +63,18 @@ class ActivitiesService {
 
   Future<List<Activity>> fetchActivities({
     required int ngoId,
-    String status = 'open',
+    required String uiStatus,
     int page = 1,
     int limit = 10,
     String? q,
   }) async {
+    final statusForApi = (uiStatus == 'open') ? 'open' : 'closed';
+
     final res = await _dio.get(
       '/ngo/activities',
       queryParameters: {
         'ngo_id': ngoId,
-        'status': status,
+        'status': statusForApi,
         'page': page,
         'limit': limit,
         if (q != null && q.isNotEmpty) 'q': q,
@@ -80,8 +82,20 @@ class ActivitiesService {
     );
 
     if (res.data is Map && res.data['ok'] == true) {
-      final List data = res.data['data'] as List? ?? [];
-      return data.map((e) => Activity.fromJson(e)).toList();
+      final List raw = res.data['data'] as List? ?? [];
+      final items = raw.map((e) => Activity.fromJson(e)).toList();
+
+      final now = DateTime.now();
+      if (uiStatus == 'in_progress') {
+        return items
+            .where((a) => !now.isBefore(a.start) && now.isBefore(a.end))
+            .toList();
+      }
+      if (uiStatus == 'completed') {
+        return items.where((a) => !now.isBefore(a.end)).toList();
+      }
+
+      return items.where((a) => now.isBefore(a.start)).toList();
     }
     throw Exception('Error obteniendo actividades');
   }
@@ -155,12 +169,22 @@ class ActivitiesService {
     }
   }
 
-  Future<void> startActivity(int activityId) async {
-    await updateStatus(activityId: activityId, status: 'in_progress');
+  Future<void> closeActivity({required int activityId}) async {
+    await updateStatus(activityId: activityId, status: 'closed');
   }
 
-  Future<void> completeActivity(int activityId) async {
-    await updateStatus(activityId: activityId, status: 'completed');
+  Future<void> finishActivity({required Activity activity}) async {
+    final now = DateTime.now();
+    await updateActivity(
+      activityId: activity.id,
+      title: activity.title,
+      description: activity.description,
+      category: activity.category,
+      modality: activity.modality,
+      start: activity.start,
+      end: now,
+      capacity: activity.capacity,
+    );
   }
 }
 
@@ -177,7 +201,7 @@ final activitiesProvider =
       final svc = ref.read(activitiesServiceProvider);
       return svc.fetchActivities(
         ngoId: args.ngoId,
-        status: args.status,
+        uiStatus: args.status,
         page: args.page,
         limit: args.limit,
         q: args.q,
