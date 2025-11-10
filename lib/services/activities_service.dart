@@ -68,11 +68,15 @@ class ActivitiesService {
     int limit = 10,
     String? q,
   }) async {
+    final effectiveStatus = (status == 'finished' || status == 'completed')
+        ? 'closed'
+        : status;
+
     final res = await _dio.get(
       '/ngo/activities',
       queryParameters: {
         'ngo_id': ngoId,
-        'status': status,
+        'status': effectiveStatus,
         'page': page,
         'limit': limit,
         if (q != null && q.isNotEmpty) 'q': q,
@@ -146,12 +150,24 @@ class ActivitiesService {
     required int activityId,
     required String status,
   }) async {
+    final effectiveStatus = (status == 'finished' || status == 'completed')
+        ? 'closed'
+        : status;
+
     Response res;
+
+    try {
+      res = await _dio.put(
+        '/ngo/activities/$activityId',
+        data: {'status': effectiveStatus},
+      );
+      if (res.data is Map && res.data['ok'] == true) return;
+    } on DioException catch (_) {}
 
     try {
       res = await _dio.patch(
         '/ngo/activities/$activityId',
-        data: {'status': status},
+        data: {'status': effectiveStatus},
       );
       if (res.data is Map && res.data['ok'] == true) return;
     } on DioException catch (_) {}
@@ -159,15 +175,7 @@ class ActivitiesService {
     try {
       res = await _dio.put(
         '/ngo/activities/$activityId/status',
-        data: {'status': status},
-      );
-      if (res.data is Map && res.data['ok'] == true) return;
-    } on DioException catch (_) {}
-
-    try {
-      res = await _dio.put(
-        '/ngo/activities/$activityId',
-        data: {'status': status},
+        data: {'status': effectiveStatus},
       );
       if (res.data is Map && res.data['ok'] == true) return;
     } on DioException catch (e) {
@@ -183,7 +191,7 @@ class ActivitiesService {
       setStatus(activityId: activityId, status: 'closed');
 
   Future<void> completeActivity({required int activityId}) =>
-      setStatus(activityId: activityId, status: 'completed');
+      setStatus(activityId: activityId, status: 'finished');
 }
 
 final activitiesServiceProvider = Provider<ActivitiesService>((ref) {

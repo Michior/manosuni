@@ -47,34 +47,37 @@ class _GestionActividadesScreenState
   }
 
   Future<void> _refreshAll() async {
+    final openArgs = (
+      ngoId: 1,
+      status: 'open',
+      page: 1,
+      limit: 10,
+      q: null as String?,
+    );
+    final coursArgs = (
+      ngoId: 1,
+      status: 'closed',
+      page: 1,
+      limit: 10,
+      q: null as String?,
+    );
+
+    final doneArgs = (
+      ngoId: 1,
+      status: 'finished',
+      page: 1,
+      limit: 10,
+      q: null as String?,
+    );
+
+    ref.invalidate(activitiesProvider(openArgs));
+    ref.invalidate(activitiesProvider(coursArgs));
+    ref.invalidate(activitiesProvider(doneArgs));
+
     await Future.wait([
-      ref.refresh(
-        activitiesProvider((
-          ngoId: 1,
-          status: 'open',
-          page: 1,
-          limit: 10,
-          q: null,
-        )).future,
-      ),
-      ref.refresh(
-        activitiesProvider((
-          ngoId: 1,
-          status: 'closed',
-          page: 1,
-          limit: 10,
-          q: null,
-        )).future,
-      ),
-      ref.refresh(
-        activitiesProvider((
-          ngoId: 1,
-          status: 'completed',
-          page: 1,
-          limit: 10,
-          q: null,
-        )).future,
-      ),
+      ref.read(activitiesProvider(openArgs).future),
+      ref.read(activitiesProvider(coursArgs).future),
+      ref.read(activitiesProvider(doneArgs).future),
     ]);
   }
 
@@ -157,13 +160,12 @@ class _GestionActividadesScreenState
                   .completeActivity(activityId: id);
             },
             afterSuccess: () async {
-              // a Completadas
               _tabs.index = 2;
               await _refreshAll();
             },
           ),
           _ActivitiesTab(
-            status: 'completed',
+            status: 'finished',
             primaryLabel: 'Completada',
             onPrimary: null,
             afterSuccess: null,
@@ -240,13 +242,16 @@ class _ActivitiesTab extends ConsumerWidget {
     );
     final async = ref.watch(activitiesProvider(args));
 
+    final hideEdit = status == 'closed';
+
     return async.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => _ErrorHint(
         message: 'No se pudieron cargar las actividades',
         detail: e.toString(),
         onRetry: () async {
-          await ref.refresh(activitiesProvider(args).future);
+          ref.invalidate(activitiesProvider(args));
+          await ref.read(activitiesProvider(args).future);
         },
       ),
       data: (items) {
@@ -256,12 +261,12 @@ class _ActivitiesTab extends ConsumerWidget {
             physics: const AlwaysScrollableScrollPhysics(),
             children: [
               _EmptyHint(
-                icon: status == 'completed'
+                icon: status == 'finished'
                     ? Icons.check_circle_outline_rounded
                     : (status == 'closed'
                           ? Icons.pending_actions_rounded
                           : Icons.event_available_rounded),
-                text: status == 'completed'
+                text: status == 'finished'
                     ? 'Aún no hay actividades completadas.'
                     : (status == 'closed'
                           ? 'No hay actividades en curso.'
@@ -273,7 +278,8 @@ class _ActivitiesTab extends ConsumerWidget {
 
         return RefreshIndicator(
           onRefresh: () async {
-            await ref.refresh(activitiesProvider(args).future);
+            ref.invalidate(activitiesProvider(args));
+            await ref.read(activitiesProvider(args).future);
           },
           child: ListView.separated(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
@@ -287,6 +293,7 @@ class _ActivitiesTab extends ConsumerWidget {
                 title: a.title,
                 dateText: _formatDateRange(a.start, a.end),
                 imageUrl: null,
+                showEdit: !hideEdit,
                 primaryDisabled: disabled,
                 primaryLabel: primaryLabel,
                 onEdit: () {
@@ -334,6 +341,7 @@ class _ActivityCard extends StatelessWidget {
   final String title;
   final String dateText;
   final String? imageUrl;
+  final bool showEdit;
   final bool primaryDisabled;
   final String primaryLabel;
   final VoidCallback onEdit;
@@ -343,6 +351,7 @@ class _ActivityCard extends StatelessWidget {
     required this.title,
     required this.dateText,
     this.imageUrl,
+    this.showEdit = true,
     required this.primaryDisabled,
     required this.primaryLabel,
     required this.onEdit,
@@ -393,8 +402,10 @@ class _ActivityCard extends StatelessWidget {
             const SizedBox(height: 12),
             Row(
               children: [
-                _SecondaryButton(label: 'Editar', onPressed: onEdit),
-                const SizedBox(width: 10),
+                if (showEdit) ...[
+                  _SecondaryButton(label: 'Editar', onPressed: onEdit),
+                  const SizedBox(width: 10),
+                ],
                 Expanded(
                   child: _PrimaryButton(
                     label: primaryLabel,
